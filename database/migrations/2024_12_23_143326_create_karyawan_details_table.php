@@ -15,7 +15,7 @@ class CreateKaryawanDetailsTable extends Migration
     {
 
         Schema::create('karyawan_detail', function (Blueprint $table) {
-            $table->uuid('karyawan_detail_id')->primary();
+            $table->string('karyawan_detail_id')->primary();
             $table->string('karyawan_id')->nullable();
             $table->string('karyawan_detail_judul_alamat')->nullable();
             $table->string('karyawan_detail_alamat')->nullable();

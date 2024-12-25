@@ -14,6 +14,7 @@ class Karyawan extends Model
     protected $keyType = 'string'; // Key type is string
     protected $table = 'karyawan'; // Nama tabel tanpa plural
     protected $primaryKey = 'karyawan_id';
+
     // protected $table = 'karyawan';
 
     // Tambahkan semua kolom yang diizinkan untuk mass assignment
@@ -110,16 +111,4 @@ class Karyawan extends Model
         'karyawan_jenispajak',
         'karyawan_header_id',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Generate UUID for new records
-        static::creating(function ($model) {
-            if (!$model->karyawan_id) {
-                $model->karyawan_id = (string) Str::uuid();
-            }
-        });
-    }
 }

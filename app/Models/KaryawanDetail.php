@@ -18,6 +18,7 @@ class KaryawanDetail extends Model
 
     // Tambahkan semua kolom yang diizinkan untuk mass assignment
     protected $fillable = [
+        'karyawan_detail_id',
         'karyawan_id',
         'karyawan_detail_judul_alamat',
         'karyawan_detail_alamat',
@@ -57,16 +58,4 @@ class KaryawanDetail extends Model
         'karyawan_detail_alamat_default',
         'kelas_jalan_id2'
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Generate UUID for new records
-        static::creating(function ($model) {
-            if (!$model->karyawan_detail_id) {
-                $model->karyawan_detail_id = (string) Str::uuid();
-            }
-        });
-    }
 }

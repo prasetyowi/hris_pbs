@@ -14,7 +14,7 @@ class CreateKaryawanDivisisTable extends Migration
     public function up()
     {
         Schema::create('karyawan_divisi', function (Blueprint $table) {
-            $table->uuid('karyawan_divisi_id')->primary();
+            $table->string('karyawan_divisi_id')->primary();
             $table->string('karyawan_divisi_kode')->nullable();
             $table->string('karyawan_divisi_nama')->nullable();
             $table->string('karyawan_divisi_reff_id')->nullable();

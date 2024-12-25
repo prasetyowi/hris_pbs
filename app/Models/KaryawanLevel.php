@@ -16,6 +16,7 @@ class KaryawanLevel extends Model
     protected $primaryKey = 'karyawan_level_id';
 
     protected $fillable = [
+        'karyawan_level_id',
         'karyawan_divisi_id',
         'karyawan_level_kode',
         'karyawan_level_nama',
@@ -32,16 +33,4 @@ class KaryawanLevel extends Model
         'karyawan_level_is_deleted',
         'posisi_urutan'
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Generate UUID for new records
-        static::creating(function ($model) {
-            if (!$model->karyawan_level_id) {
-                $model->karyawan_level_id = (string) Str::uuid();
-            }
-        });
-    }
 }

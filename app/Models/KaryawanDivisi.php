@@ -18,6 +18,7 @@ class KaryawanDivisi extends Model
 
     // Tambahkan semua kolom yang diizinkan untuk mass assignment
     protected $fillable = [
+        'karyawan_divisi_id',
         'karyawan_divisi_kode',
         'karyawan_divisi_nama',
         'karyawan_divisi_reff_id',
@@ -37,16 +38,4 @@ class KaryawanDivisi extends Model
         'karyawan_divisi_is_aktif',
         'karyawan_divisi_is_deleted'
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Generate UUID for new records
-        static::creating(function ($model) {
-            if (!$model->karyawan_divisi_id) {
-                $model->karyawan_divisi_id = (string) Str::uuid();
-            }
-        });
-    }
 }

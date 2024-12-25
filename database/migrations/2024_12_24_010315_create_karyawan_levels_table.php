@@ -16,7 +16,7 @@ class CreateKaryawanLevelsTable extends Migration
     public function up()
     {
         Schema::create('karyawan_level', function (Blueprint $table) {
-            $table->uuid('karyawan_level_id');
+            $table->string('karyawan_level_id');
             $table->string('karyawan_divisi_id')->nullable();
             $table->string('karyawan_level_kode')->nullable();
             $table->string('karyawan_level_nama')->nullable();

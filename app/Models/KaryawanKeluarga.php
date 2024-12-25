@@ -16,6 +16,7 @@ class KaryawanKeluarga extends Model
     protected $primaryKey = 'karyawan_keluarga_id';
 
     protected $fillable = [
+        'karyawan_keluarga_id',
         'karyawan_id',
         'karyawan_keluarga_nama',
         'karyawan_keluarga_tanggal_lahir',
@@ -36,16 +37,4 @@ class KaryawanKeluarga extends Model
         'karyawan_keluarga_pendidikan',
         'karyawan_keluarga_is_aktif',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Generate UUID for new records
-        static::creating(function ($model) {
-            if (!$model->karyawan_keluarga_id) {
-                $model->karyawan_keluarga_id = (string) Str::uuid();
-            }
-        });
-    }
 }

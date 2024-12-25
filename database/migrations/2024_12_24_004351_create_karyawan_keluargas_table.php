@@ -14,7 +14,7 @@ class CreateKaryawanKeluargasTable extends Migration
     public function up()
     {
         Schema::create('karyawan_keluarga', function (Blueprint $table) {
-            $table->uuid('karyawan_keluarga_id');
+            $table->string('karyawan_keluarga_id');
             $table->string('karyawan_id')->nullable();
             $table->string('karyawan_keluarga_nama')->nullable();
             $table->date('karyawan_keluarga_tanggal_lahir')->nullable();

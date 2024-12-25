@@ -24,6 +24,7 @@ class KaryawanKeluargaController extends Controller
 
         try {
             $validated = $request->validate([
+                'karyawan_keluarga_id' => 'required|unique:karyawan_keluarga,karyawan_keluarga_id',
                 'karyawan_id' => 'required|exists:karyawan,karyawan_id',
                 'karyawan_keluarga_nama' => 'required|string|max:255',
                 'karyawan_keluarga_tanggal_lahir' => 'required|date',

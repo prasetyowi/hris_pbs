@@ -24,15 +24,24 @@ class KaryawanDetailController extends Controller
     {
         try {
             $validated = $request->validate([
+                'karyawan_detail_id' => 'required|unique:karyawan_detail,karyawan_detail_id',
                 'karyawan_id' => 'required|exists:karyawan,karyawan_id',
-                'karyawan_detail_alamat' => 'required|string',
-                'karyawan_detail_kelurahan' => 'required|string',
-                'karyawan_detail_kecamatan' => 'required|string',
-                'karyawan_detail_kota' => 'required|string',
-                'karyawan_detail_propinsi' => 'required|string',
-                'karyawan_detail_kodepos' => 'required|string',
-                'karyawan_detail_phone' => 'required|string',
-                // Tambahkan validasi lain sesuai kebutuhan
+                'karyawan_detail_judul_alamat' => 'required|string|max:255',
+                'karyawan_detail_alamat' => 'required|string|max:255',
+                'karyawan_detail_propinsi' => 'required|string|max:255',
+                'karyawan_detail_kota' => 'required|string|max:255',
+                'karyawan_detail_kecamatan' => 'required|string|max:255',
+                'karyawan_detail_kelurahan' => 'required|string|max:255',
+                'karyawan_detail_kodepos' => 'required|string|max:255',
+                'karyawan_detail_phone' => 'required|string|max:255',
+                'karyawan_detail_latitude' => '',
+                'karyawan_detail_longitude' => '',
+                'area_id' => '',
+                'kelas_jalan_id' => '',
+                'karyawan_detail_is_deleted' => 'required|numeric',
+                'karyawan_detail_is_aktif' => 'required|numeric',
+                'karyawan_detail_alamat_default' => '',
+                'kelas_jalan_id2' => '',
             ]);
 
             $data = KaryawanDetail::create($validated);
@@ -64,14 +73,22 @@ class KaryawanDetailController extends Controller
         try {
             $validated = $request->validate([
                 'karyawan_id' => 'required|exists:karyawan,karyawan_id',
-                'karyawan_detail_alamat' => 'required|string',
-                'karyawan_detail_kelurahan' => 'required|string',
-                'karyawan_detail_kecamatan' => 'required|string',
-                'karyawan_detail_kota' => 'required|string',
-                'karyawan_detail_propinsi' => 'required|string',
-                'karyawan_detail_kodepos' => 'required|string',
-                'karyawan_detail_phone' => 'required|string',
-                // Tambahkan validasi lain sesuai kebutuhan
+                'karyawan_detail_judul_alamat' => 'required|string|max:255',
+                'karyawan_detail_alamat' => 'required|string|max:255',
+                'karyawan_detail_propinsi' => 'required|string|max:255',
+                'karyawan_detail_kota' => 'required|string|max:255',
+                'karyawan_detail_kecamatan' => 'required|string|max:255',
+                'karyawan_detail_kelurahan' => 'required|string|max:255',
+                'karyawan_detail_kodepos' => 'required|string|max:255',
+                'karyawan_detail_phone' => 'required|string|max:255',
+                'karyawan_detail_latitude' => '',
+                'karyawan_detail_longitude' => '',
+                'area_id' => '',
+                'kelas_jalan_id' => '',
+                'karyawan_detail_is_deleted' => 'required|numeric',
+                'karyawan_detail_is_aktif' => 'required|numeric',
+                'karyawan_detail_alamat_default' => '',
+                'kelas_jalan_id2' => '',
             ]);
 
             $karyawan->update($validated);
