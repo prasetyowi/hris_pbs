@@ -12,6 +12,10 @@ use App\Http\Controllers\TunjanganController;
 use App\Http\Controllers\TunjanganDetailController;
 use App\Http\Controllers\KategoriAbsensiController;
 use App\Http\Controllers\LiburNasionalController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\TransPayrollController;
+use App\Http\Controllers\TransPayrollDetailController;
+use App\Http\Controllers\TransPayrollDetail2Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,3 +47,7 @@ Route::apiResource('LiburNasional', LiburNasionalController::class);
 Route::get('LiburNasionalAktif', [LiburNasionalController::class, 'getLiburNasionalAktif']);
 Route::apiResource('KategoriAbsensi', KategoriAbsensiController::class);
 Route::get('KategoriAbsensiAktif', [KategoriAbsensiController::class, 'getKategoriAbsensiAktif']);
+Route::apiResource('Attendance', AttendanceController::class);
+Route::apiResource('TransPayroll', TransPayrollController::class);
+Route::apiResource('TransPayrollDetail', TransPayrollDetailController::class);
+Route::apiResource('TransPayrollDetail2', TransPayrollDetail2Controller::class);
