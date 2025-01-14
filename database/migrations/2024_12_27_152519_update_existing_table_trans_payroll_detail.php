@@ -13,9 +13,9 @@ class UpdateExistingTableTransPayrollDetail extends Migration
      */
     public function up()
     {
-        Schema::table('trans_payroll_detail', function (Blueprint $table) {
-            $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
-        });
+        // Schema::table('trans_payroll_detail', function (Blueprint $table) {
+        //     $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
+        // });
     }
 
     /**
@@ -25,8 +25,8 @@ class UpdateExistingTableTransPayrollDetail extends Migration
      */
     public function down()
     {
-        Schema::table('trans_payroll_detail', function (Blueprint $table) {
-            $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
-        });
+        // Schema::table('trans_payroll_detail', function (Blueprint $table) {
+        //     $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
+        // });
     }
 }
