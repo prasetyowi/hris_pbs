@@ -6,27 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateTunjanganDetailsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::create('tunjangan_detail', function (Blueprint $table) {
-            $table->string('tunjangan_detail_id')->primary();
-            $table->string('tunjangan_id')->nullable();
-            $table->string('kategori_absensi_id')->nullable();
+        Schema::table('tunjangan_detail', function (Blueprint $table) {
+            $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('tunjangan_detail');
+        Schema::table('tunjangan_detail', function (Blueprint $table) {
+            $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
+        });
     }
 }
