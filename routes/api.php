@@ -16,6 +16,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TransPayrollController;
 use App\Http\Controllers\TransPayrollDetailController;
 use App\Http\Controllers\TransPayrollDetail2Controller;
+use App\Http\Controllers\AuthenticateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +29,7 @@ use App\Http\Controllers\TransPayrollDetail2Controller;
 |
 */
 
-Route::post('auth/login', \App\Http\Controllers\Api\Auth\LoginController::class);
+Route::post('login', [AuthenticateController::class, 'login']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
