@@ -11,14 +11,22 @@ class CreateKaryawanLevelsTable extends Migration
     public function up()
     {
         Schema::table('karyawan_level', function (Blueprint $table) {
-            $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
+            $table->string('karyawan_level_id')->unique()->primary();
+            $table->string('karyawan_divisi_id')->index()->nullable();
+            $table->string('karyawan_level_kode')->nullable();
+            $table->string('karyawan_level_kode')->nullable();
+            $table->string('karyawan_level_nama')->nullable();
+            $table->tinyInteger('karyawan_level_is_aktif')->default(1);
+            $table->tinyInteger('karyawan_level_is_deleted')->default(0);
+            $table->integer('posisi_urutan')->nullable();
+            $table->timestamps();
+
+            $table->foreign('karyawan_divisi_id')->references('karyawan_divisi_id')->on('karyawan_divisi')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
     public function down()
     {
-        Schema::table('karyawan_level', function (Blueprint $table) {
-            $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
-        });
+        Schema::dropIfExists('karyawan_level');
     }
 }

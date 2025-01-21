@@ -8,9 +8,9 @@ class CreateSkemaTunjanganDetailsTable extends Migration
 {
     public function up()
     {
-        Schema::table('skema_tunjangan_detail', function (Blueprint $table) {
-            $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
-        });
+        // Schema::table('skema_tunjangan_detail', function (Blueprint $table) {
+        //     $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
+        // });
     }
 
     /**
@@ -20,8 +20,8 @@ class CreateSkemaTunjanganDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::table('skema_tunjangan_detail', function (Blueprint $table) {
-            $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
-        });
+        // Schema::table('skema_tunjangan_detail', function (Blueprint $table) {
+        //     $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
+        // });
     }
 }
