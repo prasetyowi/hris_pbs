@@ -6,14 +6,13 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
-class CreateKaryawanLevelsTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        Schema::table('karyawan_level', function (Blueprint $table) {
-            $table->string('karyawan_level_id')->unique()->primary();
+        Schema::create('karyawan_level', function (Blueprint $table) {
+            $table->string('karyawan_level_id')->primary();
             $table->string('karyawan_divisi_id')->index()->nullable();
-            $table->string('karyawan_level_kode')->nullable();
             $table->string('karyawan_level_kode')->nullable();
             $table->string('karyawan_level_nama')->nullable();
             $table->tinyInteger('karyawan_level_is_aktif')->default(1);
@@ -29,4 +28,4 @@ class CreateKaryawanLevelsTable extends Migration
     {
         Schema::dropIfExists('karyawan_level');
     }
-}
+};

@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKaryawanDivisisTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        Schema::table('karyawan_divisi', function (Blueprint $table) {
-            $table->string('karyawan_divisi_id')->unique()->primary();
+        Schema::create('karyawan_divisi', function (Blueprint $table) {
+            $table->string('karyawan_divisi_id')->primary();
             $table->string('karyawan_divisi_kode')->nullable();
             $table->string('karyawan_divisi_nama')->nullable();
             $table->string('karyawan_divisi_reff_id')->nullable();
@@ -25,4 +25,4 @@ class CreateKaryawanDivisisTable extends Migration
     {
         Schema::dropIfExists('karyawan_divisi');
     }
-}
+};

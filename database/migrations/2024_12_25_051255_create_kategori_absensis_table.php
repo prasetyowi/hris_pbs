@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKategoriAbsensisTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        Schema::table('kategori_absensi', function (Blueprint $table) {
-            $table->string('kategori_absensi_id')->unique()->primary();
+        Schema::create('kategori_absensi', function (Blueprint $table) {
+            $table->string('kategori_absensi_id')->primary();
             $table->string('perusahaan_id')->nullable();
             $table->string('depo_id')->nullable();
             $table->string('kategori_absensi_kode')->nullable();
@@ -37,4 +37,4 @@ class CreateKategoriAbsensisTable extends Migration
     {
         Schema::dropIfExists('kategori_absensi');
     }
-}
+};

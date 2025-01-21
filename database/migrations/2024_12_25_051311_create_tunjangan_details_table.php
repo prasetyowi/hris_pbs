@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTunjanganDetailsTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        Schema::table('tunjangan_detail', function (Blueprint $table) {
-            $table->string('tunjangan_detail_id')->unique()->primary();
+        Schema::create('tunjangan_detail', function (Blueprint $table) {
+            $table->string('tunjangan_detail_id')->primary();
             $table->string('tunjangan_id')->index()->nullable();
             $table->string('kategori_absensi_id')->nullable();
             $table->timestamps();
@@ -23,4 +23,4 @@ class CreateTunjanganDetailsTable extends Migration
     {
         Schema::dropIfExists('tunjangan_detail');
     }
-}
+};

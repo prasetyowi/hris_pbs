@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKaryawanDetailsTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        Schema::table('karyawan_detail', function (Blueprint $table) {
-            $table->string('karyawan_detail_id')->nullable()->primary();
+        Schema::create('karyawan_detail', function (Blueprint $table) {
+            $table->string('karyawan_detail_id')->primary();
             $table->string('karyawan_id')->index()->nullable();
             $table->string('karyawan_detail_judul_alamat')->nullable();
             $table->string('karyawan_detail_alamat')->nullable();
@@ -37,4 +37,4 @@ class CreateKaryawanDetailsTable extends Migration
     {
         Schema::dropIfExists('karyawan_detail');
     }
-}
+};
