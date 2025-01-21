@@ -8,15 +8,15 @@ class CreateLiburNasionalsTable extends Migration
 {
     public function up()
     {
-        Schema::table('libur_nasional', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true);
-        });
+        // Schema::table('libur_nasional', function (Blueprint $table) {
+        //     $table->boolean('is_active')->default(true);
+        // });
     }
 
     public function down()
     {
-        Schema::table('libur_nasional', function (Blueprint $table) {
-            $table->dropColumn('is_active');
-        });
+        // Schema::table('libur_nasional', function (Blueprint $table) {
+        //     $table->dropColumn('is_active');
+        // });
     }
 }
