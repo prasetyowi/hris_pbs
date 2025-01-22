@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateKaryawansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('karyawan', function (Blueprint $table) {
-            $table->string('karyawan_id')->primary();
+        Schema::table('karyawan', function (Blueprint $table) {
+            $table->string('karyawan_id')->unique()->primary();
             $table->string('perusahaan_id')->nullable();
             $table->string('unit_mandiri_id')->nullable();
             $table->string('depo_id')->nullable();
@@ -71,4 +71,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('karyawan');
     }
-};
+}
