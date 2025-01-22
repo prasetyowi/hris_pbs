@@ -9,18 +9,14 @@ class CreateTunjanganDetailsTable extends Migration
     public function up()
     {
         Schema::table('tunjangan_detail', function (Blueprint $table) {
-            $table->string('tunjangan_detail_id')->unique()->primary();
-            $table->string('tunjangan_id')->index()->nullable();
-            $table->string('kategori_absensi_id')->nullable();
-            $table->timestamps();
-
-            $table->foreign('tunjangan_id')->references('tunjangan_id')->on('tunjangan')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('kategori_absensi_id')->references('kategori_absensi_id')->on('kategori_absensi')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('tunjangan_detail');
+        Schema::table('tunjangan_detail', function (Blueprint $table) {
+            $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
+        });
     }
 }
