@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
+use function PHPUnit\Framework\isEmpty;
+
 class KaryawanDivisiController extends Controller
 {
     /**
@@ -102,6 +104,38 @@ class KaryawanDivisiController extends Controller
             }
 
             return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Get_karyawan_divisi_by_perusahaan_id($perusahaan_id)
+    {
+        // dd('Route berhasil diakses');
+
+        try {
+            $data = DB::select("SELECT
+									karyawan_divisi_id,
+									karyawan_divisi_kode,
+									karyawan_divisi_nama,
+									CASE
+										WHEN karyawan_divisi_level = 0 THEN client_wms_id
+										ELSE karyawan_divisi_reff_id
+									END AS karyawan_divisi_reff_id,
+									karyawan_divisi_level,
+									karyawan_divisi_is_aktif,
+									karyawan_divisi_is_deleted,
+									client_wms_id
+									FROM karyawan_divisi
+									WHERE karyawan_divisi_is_aktif = '1'
+									AND karyawan_divisi_is_deleted = '0'
+									AND client_wms_id = '$perusahaan_id'");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
         }

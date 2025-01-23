@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TransPayroll;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 class TransPayrollController extends Controller
@@ -97,6 +98,26 @@ class TransPayrollController extends Controller
             return response()->json(['status' => '200', 'message' => 'Data deleted successfully'], 200);
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Data deletion failed', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function proses_simpan_hasil_hitung_payroll_temp(Request $request)
+    {
+        // dd('Route berhasil diakses');
+
+        $attendance_id = $request['attendance_id'];
+        $pengguna_username = $request['pengguna_username'];
+
+        try {
+            $data = DB::select("exec proses_simpan_hasil_hitung_payroll_temp '$attendance_id','$pengguna_username'");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
         }
     }
 }

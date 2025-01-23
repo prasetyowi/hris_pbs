@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Exception;
+use function PHPUnit\Framework\isEmpty;
 
 class AttendanceController extends Controller
 {
@@ -109,6 +111,38 @@ class AttendanceController extends Controller
             return response()->json(['status' => '200', 'message' => 'Data deleted successfully'], 200);
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Data deletion failed', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Get_attendance_detail2_by_attendance_id($attendance_id)
+    {
+        // dd('Route berhasil diakses');
+
+        try {
+            $data = DB::select("select
+                                    dtl2.attendance_detail2_id,
+                                    dtl2.attendance_id,
+                                    hdr.attendance_kode,
+                                    dtl2.karyawan_id,
+                                    k.karyawan_nama,
+                                    dtl2.attendance_detail2_thn,
+                                    dtl2.attendance_detail2_bln,
+                                    dtl2.attendance_detail2_tgl,
+                                    dtl2.attendance_detail2_status
+                                from attendance_detail2 dtl2
+                                left join attendance hdr
+                                on hdr.attendance_id = dtl2.attendance_id
+                                left join karyawan k
+                                on k.karyawan_id=dtl2.karyawan_id
+                                where dtl2.attendance_id = '$attendance_id'");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
         }
     }
 }
