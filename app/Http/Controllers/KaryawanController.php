@@ -39,9 +39,9 @@ class KaryawanController extends Controller
                 'karyawan_is_perusahaan' => '',
                 'karyawan_foto' => '',
                 'karyawan_digital_signature' => '',
-                'karyawan_is_deleted' => 'required|numeric',
+                'karyawan_is_deleted' => '',
                 'karyawan_is_aktif' => 'required|numeric',
-                'karyawan_is_dewa' => 'required|numeric',
+                'karyawan_is_dewa' => '',
                 'karyawan_quote' => '',
                 'karyawan_nip' => 'required|unique:karyawan,karyawan_nip|string|max:255',
                 'karyawan_nik' => 'required|unique:karyawan,karyawan_nik|string|max:255',
@@ -70,6 +70,9 @@ class KaryawanController extends Controller
                 'karyawan_jenispajak' => '',
                 'karyawan_header_id' => '',
                 // Tambahkan validasi lain sesuai kebutuhan
+            ], [
+                'karyawan_is_dewa.default' => '0',
+                'karyawan_is_deleted.default' => '0',
             ]);
 
             $data = Karyawan::create($validated);
@@ -113,9 +116,9 @@ class KaryawanController extends Controller
                 'karyawan_is_perusahaan' => '',
                 'karyawan_foto' => '',
                 'karyawan_digital_signature' => '',
-                'karyawan_is_deleted' => 'required|numeric',
+                'karyawan_is_deleted' => '',
                 'karyawan_is_aktif' => 'required|numeric',
-                'karyawan_is_dewa' => 'required|numeric',
+                'karyawan_is_dewa' => '',
                 'karyawan_quote' => '',
                 'karyawan_nip' => 'required|string|max:255',
                 'karyawan_nik' => 'required|string|max:255',
@@ -144,6 +147,9 @@ class KaryawanController extends Controller
                 'karyawan_jenispajak' => '',
                 'karyawan_header_id' => '',
                 // Tambahkan validasi lain sesuai kebutuhan
+            ], [
+                'karyawan_is_dewa.default' => '0',
+                'karyawan_is_deleted.default' => '0',
             ]);
 
             $karyawan->update($validated);
