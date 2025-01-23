@@ -8,15 +8,15 @@ class CreateMenuAccessWebsTable extends Migration
 {
     public function up()
     {
-        Schema::table('menu_access_web', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true);
-        });
+        // Schema::table('menu_access_web', function (Blueprint $table) {
+        //     $table->boolean('is_active')->default(true);
+        // });
     }
 
     public function down()
     {
-        Schema::table('menu_access_web', function (Blueprint $table) {
-            $table->dropColumn('is_active');
-        });
+        // Schema::table('menu_access_web', function (Blueprint $table) {
+        //     $table->dropColumn('is_active');
+        // });
     }
 }

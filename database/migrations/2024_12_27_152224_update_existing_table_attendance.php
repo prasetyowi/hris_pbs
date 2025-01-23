@@ -13,9 +13,9 @@ class UpdateExistingTableAttendance extends Migration
      */
     public function up()
     {
-        Schema::table('attendance', function (Blueprint $table) {
-            $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
-        });
+        // Schema::table('attendance', function (Blueprint $table) {
+        //     $table->string('kolom_baru')->nullable(); // Menambahkan kolom baru
+        // });
     }
 
     /**
@@ -25,8 +25,8 @@ class UpdateExistingTableAttendance extends Migration
      */
     public function down()
     {
-        Schema::table('attendance', function (Blueprint $table) {
-            $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
-        });
+        // Schema::table('attendance', function (Blueprint $table) {
+        //     $table->dropColumn('kolom_baru'); // Menghapus kolom yang ditambahkan
+        // });
     }
 }

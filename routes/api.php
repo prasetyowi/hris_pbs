@@ -18,6 +18,7 @@ use App\Http\Controllers\TransPayrollDetailController;
 use App\Http\Controllers\TransPayrollDetail2Controller;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\VariableGlobalController;
+use App\Http\Controllers\AuthenticateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,8 @@ use App\Http\Controllers\VariableGlobalController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::post('login', [AuthenticateController::class, 'login']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

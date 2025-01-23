@@ -8,15 +8,15 @@ class CreatePenggunasTable extends Migration
 {
     public function up()
     {
-        Schema::table('pengguna', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true);
-        });
+        // Schema::table('pengguna', function (Blueprint $table) {
+        //     $table->boolean('is_active')->default(true);
+        // });
     }
 
     public function down()
     {
-        Schema::table('pengguna', function (Blueprint $table) {
-            $table->dropColumn('is_active');
-        });
+        // Schema::table('pengguna', function (Blueprint $table) {
+        //     $table->dropColumn('is_active');
+        // });
     }
 }
