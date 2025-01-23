@@ -9,6 +9,7 @@ class Absensi extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
     public $incrementing = false; // Non-incrementing key
     protected $keyType = 'string'; // Key type is string
     protected $table = 'absensi'; // Nama tabel tanpa plural

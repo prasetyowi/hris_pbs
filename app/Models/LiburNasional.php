@@ -10,6 +10,7 @@ class LiburNasional extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
     public $incrementing = false; // Non-incrementing key
     protected $keyType = 'string'; // Key type is string
     protected $table = 'libur_nasional'; // Nama tabel tanpa plural

@@ -9,6 +9,7 @@ class TransPayrollDetail extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
     public $incrementing = false; // Non-incrementing key
     protected $keyType = 'string'; // Key type is string
     protected $table = 'trans_payroll_detail'; // Nama tabel tanpa plural

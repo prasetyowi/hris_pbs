@@ -10,6 +10,7 @@ class KategoriTunjangan extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
     public $incrementing = false; // Non-incrementing key
     protected $keyType = 'string'; // Key type is string
     protected $table = 'kategori_tunjangan'; // Nama tabel tanpa plural
