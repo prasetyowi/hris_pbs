@@ -14,6 +14,7 @@ class Karyawan extends Model
     protected $keyType = 'string'; // Key type is string
     protected $table = 'karyawan'; // Nama tabel tanpa plural
     protected $primaryKey = 'karyawan_id';
+    public $timestamps = false;
 
     // protected $table = 'karyawan';
 
