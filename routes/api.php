@@ -60,3 +60,4 @@ Route::apiResource('TransPayrollDetail', TransPayrollDetailController::class);
 Route::apiResource('TransPayrollDetail2', TransPayrollDetail2Controller::class);
 Route::apiResource('Absensi', AbsensiController::class);
 Route::get('GetNewId', [VariableGlobalController::class, 'get_newid']);
+Route::post('GetPaginateKaryawan', [KaryawanController::class, 'Get_paginate_karyawan']);
