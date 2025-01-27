@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KaryawanLevel;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Http\Request;
+use App\Models\KaryawanLevel;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class KaryawanLevelController extends Controller
 {
@@ -30,8 +31,11 @@ class KaryawanLevelController extends Controller
 
         try {
             $validated = $request->validate([
+                'karyawan_level_id' => 'required|unique:karyawan_level,karyawan_level_id',
                 'karyawan_level_kode' => 'required|unique:karyawan_level,karyawan_level_kode|string|max:255',
                 'karyawan_level_nama' => 'required|string|max:255',
+                'karyawan_level_is_aktif' => '',
+                'karyawan_level_is_deleted' => '',
             ]);
 
             $data = KaryawanLevel::create($validated);
@@ -53,6 +57,8 @@ class KaryawanLevelController extends Controller
             $validated = $request->validate([
                 'karyawan_level_kode' => 'required|string|max:255',
                 'karyawan_level_nama' => 'required|string|max:255',
+                'karyawan_level_is_aktif' => '',
+                'karyawan_level_is_deleted' => '',
             ]);
 
             $level->update($validated);
@@ -98,5 +104,70 @@ class KaryawanLevelController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function paginate_level(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'karyawan_level_is_aktif' => 'nullable|string|max:255',
+            'search' => 'nullable|string|max:255',
+            'page' => 'nullable|integer|min:1',
+            'size' => 'nullable|integer|min:1|max:100',
+            'sort_by' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|string|max:255',
+            'status' => 'nullable',
+            'status_type' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Bad request',
+                'error' => $validator->errors(),
+            ], 400);
+        }
+
+        $query = DB::table('karyawan_level');
+
+        $query->whereNotNull('karyawan_level_id');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('karyawan_level_kode', 'like', "%{$search}%")
+                    ->orWhere('karyawan_level_nama', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('karyawan_level_is_aktif')) {
+            $karyawan_level_is_aktif = $request->input('karyawan_level_is_aktif');
+            $query->where(function ($q) use ($karyawan_level_is_aktif) {
+                $q->whereRaw("ISNULL(karyawan_level_is_aktif, 0) = ?", [$karyawan_level_is_aktif]);
+            });
+        }
+
+
+        if ($request->filled('sort_by') && $request->filled('sort_order')) {
+            $query->orderBy($request->input('sort_by'), $request->input('sort_order'));
+        } else {
+            $query->orderBy('karyawan_level_kode');
+        }
+
+        $total = $query->count();
+
+        $perPage = $request->input('size', 10);
+        $page = $request->input('page', 1);
+        $orders = $query->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->get();
+
+        return response()->json([
+            'data' => $orders,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'size' => $perPage,
+                'last_page' => ceil($total / $perPage)
+            ]
+        ]);
     }
 }
