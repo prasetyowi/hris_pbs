@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 use function PHPUnit\Framework\isEmpty;
 
@@ -144,5 +145,117 @@ class AttendanceController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function Get_paginate_attendance(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'attendance_periode_thn' => 'nullable|string',
+            'attendance_periode_bln' => 'nullable|string',
+            'attendance_is_aktif' => 'nullable|string|max:255',
+            'search' => 'nullable|string|max:255',
+            'page' => 'nullable|integer|min:1',
+            'size' => 'nullable|integer|min:1|max:100',
+            'sort_by' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|string|max:255',
+            'status' => 'nullable',
+            'status_type' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Bad request',
+                'error' => $validator->errors(),
+            ], 400);
+        }
+
+        $query = DB::table('attendance')
+            ->select([
+                DB::raw('ROW_NUMBER() OVER (ORDER BY attendance_periode_thn, attendance_periode_bln) AS RowNum'),
+                'attendance_id',
+                'perusahaan_id',
+                'depo_id',
+                'attendance_kode',
+                'attendance_thn_awal',
+                DB::raw('DATENAME(MONTH, attendance_bln_awal) AS attendance_bln_awal'),
+                'attendance_tgl_awal',
+                'attendance_thn_akhir',
+                DB::raw('DATENAME(MONTH, attendance_bln_akhir) AS attendance_bln_akhir'),
+                'attendance_tgl_akhir',
+                'attendance_who_create',
+                'attendance_tgl_create',
+                'attendance_who_update',
+                'attendance_tgl_update',
+                'attendance_is_aktif',
+                'attendance_is_generate_pph21',
+                DB::raw('DATENAME(MONTH, attendance_periode_bln) AS attendance_periode_bln_nama'),
+                'attendance_periode_bln',
+                'attendance_periode_thn'
+            ]);
+
+        $query->whereNotNull('attendance_id');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('attendance_kode', 'like', "%{$search}%")
+                    ->orWhere('attendance_thn_awal', 'like', "%{$search}%")
+                    ->orWhereRaw("DATENAME(MONTH, attendance_bln_awal) like ?", ["%{$search}%"])
+                    ->orWhereRaw("DATENAME(MONTH, attendance_bln_akhir) like ?", ["%{$search}%"])
+                    ->orWhereRaw("DATENAME(MONTH, attendance_periode_bln) like ?", ["%{$search}%"])
+                    ->orWhere('attendance_tgl_awal', 'like', "%{$search}%")
+                    ->orWhere('attendance_tgl_akhir', 'like', "%{$search}%")
+                    ->orWhere('attendance_thn_awal', 'like', "%{$search}%")
+                    ->orWhere('attendance_thn_akhir', 'like', "%{$search}%")
+                    ->orWhere('attendance_periode_thn', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('attendance_is_aktif')) {
+            $attendance_is_aktif = $request->input('attendance_is_aktif');
+            $query->where(function ($q) use ($attendance_is_aktif) {
+                $q->whereRaw("ISNULL(attendance.attendance_is_aktif, 0) = ?", [$attendance_is_aktif]);
+            });
+        }
+
+        if ($request->filled('attendance_periode_thn')) {
+            $attendance_periode_thn = $request->input('attendance_periode_thn');
+            $query->where(function ($q) use ($attendance_periode_thn) {
+                $q->where('attendance_periode_thn', '=', "$attendance_periode_thn");
+            });
+        }
+
+        if ($request->filled('attendance_periode_bln')) {
+            $attendance_periode_bln = $request->input('attendance_periode_bln');
+            $query->where(function ($q) use ($attendance_periode_bln) {
+                $q->where('attendance_periode_bln', '=', "$attendance_periode_bln");
+            });
+        }
+
+
+        if ($request->filled('sort_by') && $request->filled('sort_order')) {
+            $query->orderBy($request->input('sort_by'), $request->input('sort_order'));
+        } else {
+            $query->orderBy('attendance_periode_thn')
+                ->orderBy('attendance_periode_bln');
+        }
+
+        $total = $query->count();
+
+        $perPage = $request->input('size', 10);
+        $page = $request->input('page', 1);
+        $orders = $query->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->get();
+
+        return response()->json([
+            'data' => $orders,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'size' => $perPage,
+                'last_page' => ceil($total / $perPage)
+            ]
+        ]);
     }
 }

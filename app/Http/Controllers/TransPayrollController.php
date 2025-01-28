@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TransPayroll;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class TransPayrollController extends Controller
@@ -119,5 +120,102 @@ class TransPayrollController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function Get_paginate_trans_payroll(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'trans_payroll_status' => 'nullable|string',
+            'trans_payroll_periode_bln' => 'nullable|string',
+            'trans_payroll_periode_thn' => 'nullable|string',
+            'attendance_id' => 'nullable|string',
+            'search' => 'nullable|string|max:255',
+            'page' => 'nullable|integer|min:1',
+            'size' => 'nullable|integer|min:1|max:100',
+            'sort_by' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Bad request',
+                'error' => $validator->errors(),
+            ], 400);
+        }
+
+        $query = DB::table('trans_payroll as a')
+            ->leftJoin('attendance as b', 'b.attendance_id', '=', 'a.attendance_id')
+            ->select([
+                'a.trans_payroll_id',
+                'a.perusahaan_id',
+                'a.depo_id',
+                'a.attendance_id',
+                'b.attendance_kode',
+                'a.trans_payroll_status',
+                DB::raw('DATENAME(MONTH, a.trans_payroll_periode_bln) as trans_payroll_periode_bln_nama'),
+                'a.trans_payroll_periode_bln',
+                'a.trans_payroll_periode_thn',
+                'a.trans_payroll_who_create',
+                'a.trans_payroll_tgl_create',
+                'a.trans_payroll_who_update',
+                'a.trans_payroll_tgl_update',
+                'a.jenis_pajak',
+            ]);
+
+        $query->whereNotNull('a.trans_payroll_id');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('b.attendance_kode', 'like', "%{$search}%")
+                    ->orWhere('a.trans_payroll_status', 'like', "%{$search}%")
+                    ->orWhere('a.trans_payroll_periode_bln', 'like', "%{$search}%")
+                    ->orWhereRaw("DATENAME(MONTH, attendance_periode_bln) like ?", ["%{$search}%"])
+                    ->orWhere('a.trans_payroll_periode_thn', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('trans_payroll_status')) {
+            $trans_payroll_status = $request->input('trans_payroll_status');
+            $query->where('a.trans_payroll_status', '=', $trans_payroll_status);
+        }
+
+        if ($request->filled('trans_payroll_periode_bln')) {
+            $trans_payroll_periode_bln = $request->input('trans_payroll_periode_bln');
+            $query->where('a.trans_payroll_periode_bln', '=', $trans_payroll_periode_bln);
+        }
+
+        if ($request->filled('trans_payroll_periode_thn')) {
+            $trans_payroll_periode_thn = $request->input('trans_payroll_periode_thn');
+            $query->where('a.trans_payroll_periode_thn', '=', $trans_payroll_periode_thn);
+        }
+
+        if ($request->filled('attendance_id')) {
+            $attendance_id = $request->input('attendance_id');
+            $query->where('a.attendance_id', '=', $attendance_id);
+        }
+
+        if ($request->filled('sort_by') && $request->filled('sort_order')) {
+            $query->orderBy($request->input('sort_by'), $request->input('sort_order'));
+        } else {
+            $query->orderBy('a.trans_payroll_id');
+        }
+
+        $total = $query->count();
+        $perPage = $request->input('size', 10);
+        $page = $request->input('page', 1);
+        $orders = $query->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->get();
+
+        return response()->json([
+            'data' => $orders,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'size' => $perPage,
+                'last_page' => ceil($total / $perPage)
+            ]
+        ]);
     }
 }

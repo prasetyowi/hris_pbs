@@ -19,6 +19,7 @@ use App\Http\Controllers\TransPayrollDetail2Controller;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\VariableGlobalController;
 use App\Http\Controllers\AuthenticateController;
+use App\Http\Controllers\SkemaTunjanganController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,3 +62,10 @@ Route::apiResource('TransPayrollDetail2', TransPayrollDetail2Controller::class);
 Route::apiResource('Absensi', AbsensiController::class);
 Route::get('GetNewId', [VariableGlobalController::class, 'get_newid']);
 Route::post('GetPaginateKaryawan', [KaryawanController::class, 'Get_paginate_karyawan']);
+Route::post('GetPaginateAttendance', [AttendanceController::class, 'Get_paginate_attendance']);
+Route::post('GetPaginateKategoriAbsensi', [KategoriAbsensiController::class, 'Get_paginate_kategori_absensi']);
+Route::post('GetPaginateKategoriTunjangan', [KategoriTunjanganController::class, 'Get_paginate_kategori_tunjangan']);
+Route::post('GetPaginateLiburNasional', [LiburNasionalController::class, 'Get_paginate_libur_nasional']);
+Route::post('GetPaginateSkemaTunjangan', [SkemaTunjanganController::class, 'Get_paginate_skema_tunjangan']);
+Route::post('GetPaginateTransPayroll', [TransPayrollController::class, 'Get_paginate_trans_payroll']);
+Route::post('GetPaginateTunjangan', [TunjanganController::class, 'Get_paginate_tunjangan']);
