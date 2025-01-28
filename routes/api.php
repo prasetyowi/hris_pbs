@@ -69,3 +69,6 @@ Route::post('GetPaginateLiburNasional', [LiburNasionalController::class, 'Get_pa
 Route::post('GetPaginateSkemaTunjangan', [SkemaTunjanganController::class, 'Get_paginate_skema_tunjangan']);
 Route::post('GetPaginateTransPayroll', [TransPayrollController::class, 'Get_paginate_trans_payroll']);
 Route::post('GetPaginateTunjangan', [TunjanganController::class, 'Get_paginate_tunjangan']);
+
+Route::post('divisi-paginate', [KaryawanDivisiController::class, 'paginate_disivi']);
+Route::post('level-paginate', [KaryawanLevelController::class, 'paginate_level']);
