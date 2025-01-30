@@ -10,6 +10,12 @@ use Exception;
 
 class TransPayrollController extends Controller
 {
+    public function __construct()
+    {
+        $this->perusahaan = 'nilai global';
+        $this->depo_id = 'nilai global';
+    }
+
     public function index()
     {
         $data = TransPayroll::all();
@@ -217,5 +223,162 @@ class TransPayrollController extends Controller
                 'last_page' => ceil($total / $perPage)
             ]
         ]);
+    }
+
+    public function Get_periode_payroll_by_perusahaan()
+    {
+        $perusahaan = $this->perusahaan;
+        $depo_id = $this->depo_id;
+
+        try {
+
+            $data = DB::select("SELECT
+                                attendance_id,
+                                attendance_kode,
+                                client_wms_id,
+                                depo_id,
+                                attendance_thn_awal,
+                                attendance_bln_awal,
+                                attendance_tgl_awal,
+                                attendance_thn_akhir,
+                                attendance_bln_akhir,
+                                attendance_tgl_akhir,
+                                attendance_who_create,
+                                attendance_tgl_create,
+                                attendance_who_update,
+                                attendance_tgl_update,
+                                attendance_is_aktif,
+                                attendance_is_generate_pph21
+                                FROM attendance
+                                WHERE CONVERT(NVARCHAR(36),client_wms_id) = '$perusahaan'
+                                AND CONVERT(NVARCHAR(36),depo_id) = '$depo_id'
+                                AND attendance_is_aktif = '1'
+                                AND ISNULL(attendance_is_generate_pph21, '0') = '0'
+                                AND attendance_id not in (select ISNULL(attendance_id, NEWID()) from trans_payroll where CONVERT(NVARCHAR(36),client_wms_id) = '$perusahaan' AND CONVERT(NVARCHAR(36),depo_id) = '$depo_id')
+                                ORDER BY attendance_thn_awal, attendance_bln_awal ASC");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Get_periode_payroll_by_perusahaan_edit($id)
+    {
+        try {
+
+            $data = DB::select("SELECT
+                                attendance_id,
+                                attendance_kode,
+                                client_wms_id,
+                                depo_id,
+                                attendance_thn_awal,
+                                attendance_bln_awal,
+                                attendance_tgl_awal,
+                                attendance_thn_akhir,
+                                attendance_bln_akhir,
+                                attendance_tgl_akhir,
+                                attendance_who_create,
+                                attendance_tgl_create,
+                                attendance_who_update,
+                                attendance_tgl_update,
+                                attendance_is_aktif,
+                                attendance_is_generate_pph21
+                                FROM attendance
+                                WHERE CONVERT(NVARCHAR(36), attendance_id) = '$id'
+                                ORDER BY attendance_thn_awal, attendance_bln_awal ASC");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Get_total_penghasilan_bruto_karyawan_by_id($trans_payroll_id, $trans_payroll_detail_id)
+    {
+        try {
+
+            $data = DB::select("SELECT trans_payroll_detail_id,
+                                    SUM(trans_payroll_detail2_totalvalue) AS bruto
+                                FROM
+                                (SELECT trans_payroll_detail_id,
+                                        trans_payroll_detail2_totalvalue,
+                                        ISNULL(tunjangan.tunjangan_nama, 'BASIC_SALARY') AS tunjangan_nama,
+                                        ISNULL(tunjangan.tunjangan_flag_pph, 0) AS tunjangan_flag_pph
+                                FROM trans_payroll_detail2
+                                LEFT JOIN tunjangan ON trans_payroll_detail2.tunjangan_id = tunjangan.tunjangan_id
+                                WHERE CONVERT(NVARCHAR(36), trans_payroll_id) = '$trans_payroll_id'
+                                    AND trans_payroll_detail2.tunjangan_nama IN ('BASIC_SALARY')
+                                UNION SELECT a.trans_payroll_detail_id,
+                                                CASE
+                                                    WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
+                                                    ELSE trans_payroll_detail2_totalvalue
+                                                END AS trans_payroll_detail2_totalvalue,
+                                                b.tunjangan_nama,
+                                                b.tunjangan_flag_pph
+                                FROM trans_payroll_detail2 a
+                                LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                WHERE CONVERT(NVARCHAR(36), trans_payroll_id) = '$trans_payroll_id'
+                                    AND ISNULL(b.tunjangan_flag_pph, 0) = 1
+                                    AND ISNULL(b.tunjangan_khusus, 0) = 0) tempbruto
+                                WHERE trans_payroll_detail_id = '$trans_payroll_detail_id'
+                                GROUP BY trans_payroll_detail_id");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Get_total_penghasilan_bruto_karyawan_by_id_temp($trans_payroll_id, $trans_payroll_detail_id)
+    {
+        try {
+
+            $data = DB::select("SELECT trans_payroll_detail_id,
+                                    SUM(trans_payroll_detail2_totalvalue) AS bruto
+                                FROM
+                                (SELECT trans_payroll_detail_id,
+                                        trans_payroll_detail2_totalvalue,
+                                        ISNULL(tunjangan.tunjangan_nama, 'BASIC_SALARY') AS tunjangan_nama,
+                                        ISNULL(tunjangan.tunjangan_flag_pph, 0) AS tunjangan_flag_pph
+                                FROM trans_payroll_detail2_temp
+                                LEFT JOIN tunjangan ON trans_payroll_detail2_temp.tunjangan_id = tunjangan.tunjangan_id
+                                WHERE CONVERT(NVARCHAR(36), trans_payroll_id) = '$trans_payroll_id'
+                                    AND trans_payroll_detail2_temp.tunjangan_nama IN ('BASIC_SALARY')
+                                UNION SELECT a.trans_payroll_detail_id,
+                                                CASE
+                                                    WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
+                                                    ELSE trans_payroll_detail2_totalvalue
+                                                END AS trans_payroll_detail2_totalvalue,
+                                                b.tunjangan_nama,
+                                                b.tunjangan_flag_pph
+                                FROM trans_payroll_detail2_temp a
+                                LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                WHERE CONVERT(NVARCHAR(36), trans_payroll_id) = '$trans_payroll_id'
+                                    AND ISNULL(b.tunjangan_flag_pph, 0) = 1
+                                    AND ISNULL(b.tunjangan_khusus, 0) = 0) tempbruto
+                                WHERE trans_payroll_detail_id = '$trans_payroll_detail_id'
+                                GROUP BY trans_payroll_detail_id");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
     }
 }
