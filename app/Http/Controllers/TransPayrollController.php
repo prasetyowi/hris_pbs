@@ -10,11 +10,6 @@ use Exception;
 
 class TransPayrollController extends Controller
 {
-    public function __construct()
-    {
-        $this->perusahaan = 'nilai global';
-        $this->depo_id = 'nilai global';
-    }
 
     public function index()
     {
@@ -105,26 +100,6 @@ class TransPayrollController extends Controller
             return response()->json(['status' => '200', 'message' => 'Data deleted successfully'], 200);
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Data deletion failed', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function proses_simpan_hasil_hitung_payroll_temp(Request $request)
-    {
-        // dd('Route berhasil diakses');
-
-        $attendance_id = $request['attendance_id'];
-        $pengguna_username = $request['pengguna_username'];
-
-        try {
-            $data = DB::select("exec proses_simpan_hasil_hitung_payroll_temp '$attendance_id','$pengguna_username'");
-
-            if (count($data) == 0) {
-                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
-            } else {
-                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
-            }
-        } catch (Exception $e) {
-            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -227,8 +202,8 @@ class TransPayrollController extends Controller
 
     public function Get_periode_payroll_by_perusahaan()
     {
-        $perusahaan = $this->perusahaan;
-        $depo_id = $this->depo_id;
+        $perusahaan = "";
+        $depo_id = "";
 
         try {
 
@@ -371,6 +346,38 @@ class TransPayrollController extends Controller
                                     AND ISNULL(b.tunjangan_khusus, 0) = 0) tempbruto
                                 WHERE trans_payroll_detail_id = '$trans_payroll_detail_id'
                                 GROUP BY trans_payroll_detail_id");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Proses_simpan_hasil_hitung_payroll_temp_by_karyawan($trans_payroll_id, $karyawan_id, $pengguna_username)
+    {
+        try {
+
+            $data = DB::select("exec proses_simpan_hasil_hitung_payroll_temp_by_karyawan '$trans_payroll_id','$karyawan_id','$pengguna_username'");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Proses_simpan_hasil_hitung_payroll_temp($attendance_id, $trans_payroll_id, $pengguna_username)
+    {
+        try {
+
+            $data = DB::select("exec proses_simpan_hasil_hitung_payroll_temp '$attendance_id','$trans_payroll_id','$pengguna_username'");
 
             if (count($data) == 0) {
                 return response()->json(['status' => '204', 'message' => 'No data found'], 204);
