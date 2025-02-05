@@ -67,6 +67,7 @@ Route::post('GetPaginateAttendance', [AttendanceController::class, 'Get_paginate
 Route::post('GetPaginateKategoriAbsensi', [KategoriAbsensiController::class, 'Get_paginate_kategori_absensi']);
 Route::post('GetPaginateKategoriTunjangan', [KategoriTunjanganController::class, 'Get_paginate_kategori_tunjangan']);
 Route::post('GetPaginateLiburNasional', [LiburNasionalController::class, 'Get_paginate_libur_nasional']);
+Route::post('GetPaginateLiburNasionalIndex', [LiburNasionalController::class, 'Get_paginate_libur_nasional_index']);
 Route::post('GetPaginateSkemaTunjangan', [SkemaTunjanganController::class, 'Get_paginate_skema_tunjangan']);
 Route::post('GetPaginateTransPayroll', [TransPayrollController::class, 'Get_paginate_trans_payroll']);
 Route::post('GetPaginateTunjangan', [TunjanganController::class, 'Get_paginate_tunjangan']);

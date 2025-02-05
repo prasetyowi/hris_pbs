@@ -184,4 +184,67 @@ class LiburNasionalController extends Controller
             ]
         ]);
     }
+
+    public function Get_paginate_libur_nasional_index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'libur_nasional_tahun' => 'nullable|integer',
+            'search' => 'nullable|string|max:255',
+            'page' => 'nullable|integer|min:1',
+            'size' => 'nullable|integer|min:1|max:100',
+            'sort_by' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Bad request',
+                'error' => $validator->errors(),
+            ], 400);
+        }
+
+        $query = DB::table('libur_nasional')
+            ->select([
+                'libur_nasional_tahun',
+            ]);
+
+        $query->whereNotNull('libur_nasional_id');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('libur_nasional_nama', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('libur_nasional_tahun')) {
+            $libur_nasional_tahun = $request->input('libur_nasional_tahun');
+            $query->where('libur_nasional_tahun', '=', $libur_nasional_tahun);
+        }
+
+        $query->groupBy('libur_nasional_tahun');
+
+        if ($request->filled('sort_by') && $request->filled('sort_order')) {
+            $query->orderBy($request->input('sort_by'), $request->input('sort_order'));
+        } else {
+            $query->orderBy('libur_nasional_tahun');
+        }
+
+        $total = $query->count();
+        $perPage = $request->input('size', 10);
+        $page = $request->input('page', 1);
+        $orders = $query->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->get();
+
+        return response()->json([
+            'data' => $orders,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'size' => $perPage,
+                'last_page' => ceil($total / $perPage)
+            ]
+        ]);
+    }
 }
