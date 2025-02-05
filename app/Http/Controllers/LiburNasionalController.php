@@ -230,7 +230,7 @@ class LiburNasionalController extends Controller
             $query->orderBy('libur_nasional_tahun');
         }
 
-        $total = $query->count();
+        $total = count($query->get());
         $perPage = $request->input('size', 10);
         $page = $request->input('page', 1);
         $orders = $query->offset(($page - 1) * $perPage)
