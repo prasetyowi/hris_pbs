@@ -44,6 +44,7 @@ Route::apiResource('KaryawanDivisi', KaryawanDivisiController::class);
 Route::get('KaryawanDivisiAktif', [KaryawanDivisiController::class, 'getKaryawanDivisiAktif']);
 Route::apiResource('KaryawanLevel', KaryawanLevelController::class);
 Route::get('KaryawanLevelAktif', [KaryawanLevelController::class, 'getKaryawanLevelAktif']);
+Route::get('getKaryawanLevelDivisi/{divisi}', [KaryawanLevelController::class, 'getKaryawanLevelDivisi']);
 Route::apiResource('KaryawanKeluarga', KaryawanKeluargaController::class);
 Route::apiResource('KategoriTunjangan', KategoriTunjanganController::class);
 Route::get('KategoriTunjanganAktif', [KategoriTunjanganController::class, 'getKategoriTunjanganAktif']);

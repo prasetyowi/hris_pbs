@@ -32,6 +32,7 @@ class KaryawanLevelController extends Controller
         try {
             $validated = $request->validate([
                 'karyawan_level_id' => 'required|unique:karyawan_level,karyawan_level_id',
+                'karyawan_divisi_id' => 'required|string|max:255',
                 'karyawan_level_kode' => 'required|unique:karyawan_level,karyawan_level_kode|string|max:255',
                 'karyawan_level_nama' => 'required|string|max:255',
                 'karyawan_level_is_aktif' => '',
@@ -56,6 +57,7 @@ class KaryawanLevelController extends Controller
         try {
             $validated = $request->validate([
                 'karyawan_level_kode' => 'required|string|max:255',
+                'karyawan_divisi_id' => 'required|string|max:255',
                 'karyawan_level_nama' => 'required|string|max:255',
                 'karyawan_level_is_aktif' => '',
                 'karyawan_level_is_deleted' => '',
@@ -106,6 +108,27 @@ class KaryawanLevelController extends Controller
         }
     }
 
+    public function getKaryawanLevelDivisi($divisi)
+    {
+        // dd('Route berhasil diakses');
+
+        try {
+            $data = DB::table('karyawan_level')
+                ->where('karyawan_divisi_id', $divisi)
+                ->where('karyawan_level_is_aktif', 1)
+                ->orderBy('karyawan_level_nama', 'asc')
+                ->get();
+
+            if ($data->isEmpty()) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            }
+
+            return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function paginate_level(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -126,7 +149,9 @@ class KaryawanLevelController extends Controller
             ], 400);
         }
 
-        $query = DB::table('karyawan_level');
+        $query = DB::table('karyawan_level')
+                    ->select('karyawan_level.*', 'karyawan_divisi.karyawan_divisi_nama')
+                    ->leftJoin('karyawan_divisi', 'karyawan_level.karyawan_divisi_id', '=', 'karyawan_divisi.karyawan_divisi_id');
 
         $query->whereNotNull('karyawan_level_id');
 

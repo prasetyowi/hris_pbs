@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Karyawan;
 use Exception;
+use Carbon\Carbon;
+use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use App\Models\KaryawanDetail;
+use App\Models\KaryawanKeluarga;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class KaryawanController extends Controller
 {
@@ -171,6 +173,10 @@ class KaryawanController extends Controller
         }
 
         try {
+
+            KaryawanDetail::where('karyawan_id', $id)->delete();
+            KaryawanKeluarga::where('karyawan_id', $id)->delete();
+
             $Karyawan->delete();
 
             return response()->json(['status' => '200', 'message' => 'Data deleted successfully'], 200);
