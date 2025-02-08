@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LiburNasional;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,11 +17,11 @@ class LiburNasionalController extends Controller
         return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
     }
 
-    public function show($id)
+    public function show($year)
     {
-        $data = LiburNasional::find($id);
+        $data = LiburNasional::where('libur_nasional_tahun', $year)->get();
         if ($data) {
-            return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => ['year' => $year, 'holidays' => $data]], 200);
         }
 
         return response()->json(['status' => '404', 'message' => 'Data not found'], 404);
@@ -28,55 +29,123 @@ class LiburNasionalController extends Controller
 
     public function store(Request $request)
     {
-
+        DB::beginTransaction();
         try {
-            $validated = $request->validate([
-                'libur_nasional_id' => 'required|unique:libur_nasional,libur_nasional_id|string|max:255',
-                'libur_nasional_tahun' => 'required|numeric',
-                'libur_nasional_tanggal' => 'required|date',
-                'libur_nasional_nama' => 'required|string|max:255'
-            ]);
+            if ($request->holidays) {
+                foreach ($request->holidays as $holiday) {
+                    $validator = Validator::make($holiday, [
+                        'libur_nasional_id' => 'required|unique:libur_nasional,libur_nasional_id|string|max:255',
+                        'libur_nasional_tahun' => 'required|numeric',
+                        'libur_nasional_tanggal' => 'required|date',
+                        'libur_nasional_nama' => 'required|string|max:255'
+                    ]);
 
-            $data = LiburNasional::create($validated);
+                    if ($validator->fails()) {
+                        return response()->json(['errors' => $validator->errors()], 422);
+                    }
 
-            return response()->json(['status' => '200', 'message' => 'Data created successfully', 'validated' => $validated, 'data' => $data], 200);
+                    $cekExistDate = LiburNasional::where('libur_nasional_tanggal', $holiday['libur_nasional_tanggal'])
+                        ->where('libur_nasional_tahun', $holiday['libur_nasional_tahun'])->first();
+                    if ($cekExistDate) {
+                        return response()->json(['status' => '400', 'message' =>  "data " . Carbon::parse($holiday['libur_nasional_tanggal'])->tz(config('app.timezone'))->format('d F Y') . " already exist"], 400);
+                    }
+
+                    LiburNasional::create([
+                        'libur_nasional_id' => $holiday['libur_nasional_id'],
+                        'libur_nasional_tahun' => $holiday['libur_nasional_tahun'],
+                        'libur_nasional_tanggal' => $holiday['libur_nasional_tanggal'],
+                        'libur_nasional_nama' => $holiday['libur_nasional_nama'],
+                        'libur_nasional_is_aktif' => 1,
+                        'libur_nasional_who_create' => $request->user,
+                        'libur_nasional_tgl_create' => Carbon::now()
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['status' => '200', 'message' => 'Data created successfully'], 200);
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json(['status' => '500', 'message' => 'Data creation failed', 'data' => $e instanceof \Illuminate\Validation\ValidationException ? $e->errors() : $e->getMessage()], 500);
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $year)
     {
-        $level = LiburNasional::find($id);
-        if (!$level) {
-            return response()->json(['status' => '404', 'message' => 'Karyawan divisi not found'], 404);
+        $checkYear = LiburNasional::where('libur_nasional_tahun', $year)->get();
+        if (!$checkYear) {
+            return response()->json(['status' => '404', 'message' => 'Data not found'], 404);
         }
 
+        DB::beginTransaction();
         try {
-            $validated = $request->validate([
-                'libur_nasional_tahun' => 'required|numeric',
-                'libur_nasional_tanggal' => 'required|date',
-                'libur_nasional_nama' => 'required|string|max:255'
-            ]);
+            if ($request->holidays) {
+                $arrayLiburNasionalId = [];
+                foreach ($request->holidays as $holiday) {
+                    $arrayLiburNasionalId[] = $holiday['libur_nasional_id'];
+                    $fieldValidator = [
+                        'libur_nasional_tahun' => 'required|numeric',
+                        'libur_nasional_tanggal' => 'required|date',
+                        'libur_nasional_nama' => 'required|string|max:255'
+                    ];
 
-            $level->update($validated);
+                    if ($holiday['is_new'] == 1) {
+                        $fieldValidator['libur_nasional_id'] = 'required|unique:libur_nasional,libur_nasional_id|string|max:255';
+                    }
 
-            return response()->json(['status' => '200', 'message' => 'Data updated successfully', 'validated' => $validated, 'data' => $level], 200);
+                    $validator = Validator::make($holiday, $fieldValidator);
+
+                    if ($validator->fails()) {
+                        return response()->json(['errors' => $validator->errors()], 422);
+                    }
+
+                    if($holiday['is_new'] == 1){
+                        $cekExistDate = LiburNasional::where('libur_nasional_tanggal', $holiday['libur_nasional_tanggal'])
+                            ->where('libur_nasional_tahun', $holiday['libur_nasional_tahun'])->first();
+                        if ($cekExistDate) {
+                            return response()->json(['status' => '400', 'message' =>  "data " . Carbon::parse($holiday['libur_nasional_tanggal'])->tz(config('app.timezone'))->format('d F Y') . " already exist"], 400);
+                        }
+
+                        LiburNasional::create([
+                            'libur_nasional_id' => $holiday['libur_nasional_id'],
+                            'libur_nasional_tahun' => $holiday['libur_nasional_tahun'],
+                            'libur_nasional_tanggal' => $holiday['libur_nasional_tanggal'],
+                            'libur_nasional_nama' => $holiday['libur_nasional_nama'],
+                            'libur_nasional_is_aktif' => 1,
+                            'libur_nasional_who_create' => $request->user,
+                            'libur_nasional_tgl_create' => Carbon::now()
+                        ]);
+                    } else {
+                        LiburNasional::where('libur_nasional_id', $holiday['libur_nasional_id'])->update([
+                            'libur_nasional_tanggal' => $holiday['libur_nasional_tanggal'],
+                            'libur_nasional_nama' => $holiday['libur_nasional_nama'],
+                            'libur_nasional_who_update' => $request->user,
+                            'libur_nasional_tgl_update' => Carbon::now()
+                        ]);
+                    }
+                }
+
+                LiburNasional::where('libur_nasional_tahun', $year)->whereNotIn('libur_nasional_id', $arrayLiburNasionalId)->delete();
+            }
+
+            DB::commit();
+            return response()->json(['status' => '200', 'message' => 'Data updated successfully'], 200);
         } catch (Exception $e) {
-            return response()->json(['status' => '500', 'message' => 'Data update failed', 'data' => $e instanceof \Illuminate\Validation\ValidationException ? $e->errors() : $e->getMessage()], 500);
+            DB::rollBack();
+            return response()->json(['status' => '500', 'message' => 'Data updated failed', 'data' => $e instanceof \Illuminate\Validation\ValidationException ? $e->errors() : $e->getMessage()], 500);
         }
     }
 
-    public function destroy($id)
+    public function destroy($year)
     {
-        $LiburNasional = LiburNasional::find($id);
+        $liburNasional = LiburNasional::where('libur_nasional_tahun', $year)->pluck('libur_nasional_id');
 
-        if (!$LiburNasional) {
+        if (!$liburNasional) {
             return response()->json(['status' => '404', 'message' => 'Data not found'], 404);
         }
 
         try {
-            $LiburNasional->delete();
+            LiburNasional::whereIn('libur_nasional_id', $liburNasional)->delete();
 
             return response()->json(['status' => '200', 'message' => 'Data deleted successfully'], 200);
         } catch (Exception $e) {
