@@ -17,7 +17,7 @@ class TunjanganDetailController extends Controller
 
     public function show($id)
     {
-        $data = TunjanganDetail::find($id);
+        $data = TunjanganDetail::with('kategori_absensi')->where('tunjangan_id', $id)->get();
         if ($data) {
             return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
         }
@@ -66,14 +66,8 @@ class TunjanganDetailController extends Controller
 
     public function destroy($id)
     {
-        $TunjanganDetail = TunjanganDetail::find($id);
-
-        if (!$TunjanganDetail) {
-            return response()->json(['status' => '404', 'message' => 'Data not found'], 404);
-        }
-
         try {
-            $TunjanganDetail->delete();
+            TunjanganDetail::where('tunjangan_id', $id)->delete();
 
             return response()->json(['status' => '200', 'message' => 'Data deleted successfully'], 200);
         } catch (Exception $e) {

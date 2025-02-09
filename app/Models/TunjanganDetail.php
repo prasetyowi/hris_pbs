@@ -26,4 +26,8 @@ class TunjanganDetail extends Model
         'tunjangan_id',
         'kategori_absensi_id'
     ];
+
+    public function kategori_absensi(){
+        return $this->belongsTo(KategoriAbsensi::class, 'kategori_absensi_id');
+    }
 }

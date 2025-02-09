@@ -32,7 +32,7 @@ class TunjanganController extends Controller
         try {
             $validated = $request->validate([
                 'tunjangan_id' => 'required|unique:tunjangan,tunjangan_id|string|max:255',
-                'kategori_tunjangan_id' => 'required|string|max:255',
+                // 'kategori_tunjangan_id' => 'required|string|max:255',
                 'tunjangan_kode' => 'required|unique:tunjangan,tunjangan_kode|string|max:255',
                 'tunjangan_nama' => 'required|unique:tunjangan,tunjangan_nama|string|max:255',
                 'tunjangan_jenistunjangan' => 'required|string|max:255',
@@ -41,7 +41,19 @@ class TunjanganController extends Controller
                 'tunjangan_dibayar_kepada' => 'required|string|max:255'
             ]);
 
-            $data = Tunjangan::create($validated);
+            $data = Tunjangan::create([
+                'tunjangan_id' => $request->tunjangan_id,
+                'tunjangan_kode' => $request->tunjangan_kode,
+                'tunjangan_nama' => $request->tunjangan_nama,
+                'tunjangan_jenistunjangan' => $request->tunjangan_jenistunjangan,
+                'tunjangan_dasarbayar' => $request->tunjangan_dasarbayar,
+                'tunjangan_dibayar_oleh' => $request->tunjangan_dibayar_oleh,
+                'tunjangan_dibayar_kepada' => $request->tunjangan_dibayar_kepada,
+                'tunjangan_keterangan' => $request->tunjangan_keterangan,
+                'tunjangan_is_aktif' => $request->tunjangan_is_aktif,
+                'tunjangan_print_slip' => $request->tunjangan_print_slip,
+                'tunjangan_khusus' => $request->tunjangan_khusus,
+            ]);
 
             return response()->json(['status' => '200', 'message' => 'Data created successfully', 'validated' => $validated, 'data' => $data], 200);
         } catch (Exception $e) {
@@ -51,14 +63,14 @@ class TunjanganController extends Controller
 
     public function update(Request $request, $id)
     {
-        $level = Tunjangan::find($id);
-        if (!$level) {
-            return response()->json(['status' => '404', 'message' => 'Karyawan divisi not found'], 404);
+        $tunjangan = Tunjangan::find($id);
+        if (!$tunjangan) {
+            return response()->json(['status' => '404', 'message' => 'Data not found'], 404);
         }
 
         try {
             $validated = $request->validate([
-                'kategori_tunjangan_id' => 'required|string|max:255',
+                // 'kategori_tunjangan_id' => 'required|string|max:255',
                 'tunjangan_kode' => 'required|string|max:255',
                 'tunjangan_nama' => 'required|string|max:255',
                 'tunjangan_jenistunjangan' => 'required|string|max:255',
@@ -67,9 +79,20 @@ class TunjanganController extends Controller
                 'tunjangan_dibayar_kepada' => 'required|string|max:255'
             ]);
 
-            $level->update($validated);
+            $tunjangan->update([
+                'tunjangan_kode' => $request->tunjangan_kode,
+                'tunjangan_nama' => $request->tunjangan_nama,
+                'tunjangan_jenistunjangan' => $request->tunjangan_jenistunjangan,
+                'tunjangan_dasarbayar' => $request->tunjangan_dasarbayar,
+                'tunjangan_dibayar_oleh' => $request->tunjangan_dibayar_oleh,
+                'tunjangan_dibayar_kepada' => $request->tunjangan_dibayar_kepada,
+                'tunjangan_keterangan' => $request->tunjangan_keterangan,
+                'tunjangan_is_aktif' => $request->tunjangan_is_aktif,
+                'tunjangan_print_slip' => $request->tunjangan_print_slip,
+                'tunjangan_khusus' => $request->tunjangan_khusus,
+            ]);
 
-            return response()->json(['status' => '200', 'message' => 'Data updated successfully', 'validated' => $validated, 'data' => $level], 200);
+            return response()->json(['status' => '200', 'message' => 'Data updated successfully', 'validated' => $validated, 'data' => $tunjangan], 200);
         } catch (Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Data update failed', 'data' => $e instanceof \Illuminate\Validation\ValidationException ? $e->errors() : $e->getMessage()], 500);
         }
