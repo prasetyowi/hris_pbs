@@ -36,8 +36,6 @@ class KategoriAbsensiController extends Controller
                 'kategori_absensi_nama' => 'required|unique:kategori_absensi,kategori_absensi_nama|string|max:255',
                 'perusahaan_id' => '',
                 'depo_id' => '',
-                'kategori_absensi_kode' => '',
-                'kategori_absensi_nama' => '',
                 'kategori_absensi_keterangan' => '',
                 'kategori_absensi_is_unlimited_saldo' => '',
                 'kategori_absensi_saldo_hari' => '',

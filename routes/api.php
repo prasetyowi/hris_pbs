@@ -72,5 +72,7 @@ Route::post('GetPaginateSkemaTunjangan', [SkemaTunjanganController::class, 'Get_
 Route::post('GetPaginateTransPayroll', [TransPayrollController::class, 'Get_paginate_trans_payroll']);
 Route::post('GetPaginateTunjangan', [TunjanganController::class, 'Get_paginate_tunjangan']);
 
+Route::delete('LiburNasional/{LiburNasional}/detail', [LiburNasionalController::class, 'destroyDetail'])->name('libur-nasional.destroy.detail');
+
 Route::post('divisi-paginate', [KaryawanDivisiController::class, 'paginate_disivi']);
 Route::post('level-paginate', [KaryawanLevelController::class, 'paginate_level']);

@@ -153,6 +153,23 @@ class LiburNasionalController extends Controller
         }
     }
 
+    public function destroyDetail($id)
+    {
+        $liburNasional = LiburNasional::find($id);
+
+        if (!$liburNasional) {
+            return response()->json(['status' => '404', 'message' => 'Data not found'], 404);
+        }
+
+        try {
+            $liburNasional->delete();
+
+            return response()->json(['status' => '200', 'message' => 'Data deleted successfully'], 200);
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Data deletion failed', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function getLiburNasionalAktif()
     {
         // dd('Route berhasil diakses');
