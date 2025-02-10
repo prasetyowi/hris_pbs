@@ -147,6 +147,13 @@ class AttendanceController extends Controller
         }
     }
 
+
+    public function attendance_active()
+    {
+        $data = Attendance::where('attendance_is_aktif', '1')->get();
+        return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+    }
+
     public function Get_paginate_attendance(Request $request)
     {
         $validator = Validator::make($request->all(), [

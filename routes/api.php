@@ -55,6 +55,7 @@ Route::get('LiburNasionalAktif', [LiburNasionalController::class, 'getLiburNasio
 Route::apiResource('KategoriAbsensi', KategoriAbsensiController::class);
 Route::get('KategoriAbsensiAktif', [KategoriAbsensiController::class, 'getKategoriAbsensiAktif']);
 Route::apiResource('Attendance', AttendanceController::class);
+Route::get('attendace_active', [AttendanceController::class, 'attendance_active']);
 Route::get('AttendanceDetail2byAttendanceId/{id}', [AttendanceController::class, 'Get_attendance_detail2_by_attendance_id']);
 Route::post('ProsesSimpanHasilHitungPayrollTemp', [TransPayrollController::class, 'proses_simpan_hasil_hitung_payroll_temp']);
 Route::apiResource('TransPayroll', TransPayrollController::class);
@@ -76,3 +77,5 @@ Route::delete('LiburNasional/{LiburNasional}/detail', [LiburNasionalController::
 
 Route::post('divisi-paginate', [KaryawanDivisiController::class, 'paginate_disivi']);
 Route::post('level-paginate', [KaryawanLevelController::class, 'paginate_level']);
+
+Route::post('attendance_timesheet', [VariableGlobalController::class, 'attendance_timesheet']);
