@@ -99,7 +99,7 @@ class LiburNasionalController extends Controller
                         return response()->json(['errors' => $validator->errors()], 422);
                     }
 
-                    if($holiday['is_new'] == 1){
+                    if ($holiday['is_new'] == 1) {
                         $cekExistDate = LiburNasional::where('libur_nasional_tanggal', $holiday['libur_nasional_tanggal'])
                             ->where('libur_nasional_tahun', $holiday['libur_nasional_tahun'])->first();
                         if ($cekExistDate) {

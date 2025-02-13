@@ -235,4 +235,71 @@ class TransPayrollDetailController extends Controller
             return response()->json(['status' => '500', 'message' => 'Data deletion failed', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function Get_paginate_trans_payroll_detail_by_id(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'trans_payroll_id' => 'required|string',
+            'search' => 'nullable|string|max:255',
+            'page' => 'nullable|integer|min:1',
+            'size' => 'nullable|integer|min:1|max:100',
+            'sort_by' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Bad request',
+                'error' => $validator->errors(),
+            ], 400);
+        }
+
+        $trans_payroll_id = $request->input('trans_payroll_id');
+        $search = $request->input('search');
+        $page = $request->input('page', 1);
+        $size = $request->input('size', 10);
+        $sort_by = $request->input('sort_by');
+        $sort_order = $request->input('sort_order');
+
+        $query = DB::table('trans_payroll_detail as dtl')
+            ->leftJoin('trans_payroll as hdr', 'hdr.trans_payroll_id', '=', 'dtl.trans_payroll_id')
+            ->leftJoin('karyawan', 'karyawan.karyawan_id', '=', 'dtl.karyawan_id')
+            ->leftJoin('karyawan_divisi as divisi', 'divisi.karyawan_divisi_id', '=', 'karyawan.karyawan_divisi_id')
+            ->leftJoin('karyawan_level as level', 'level.karyawan_level_id', '=', 'karyawan.karyawan_level_id')
+            ->leftJoin('trans_payroll_detail2 as tempbruto', 'tempbruto.trans_payroll_detail_id', '=', 'dtl.trans_payroll_detail_id')
+            ->leftJoin('trans_payroll_detail2 as temppph21', 'temppph21.trans_payroll_detail_id', '=', 'dtl.trans_payroll_detail_id')
+            ->where('dtl.trans_payroll_id', '=', $trans_payroll_id);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('divisi', 'like', "%{$search}%")
+                    ->orWhere('karyawan_nama', 'like', "%{$search}%")
+                    ->orWhere('karyawan_level_nama', 'like', "%{$search}%")
+                    ->orWhere('trans_payroll_detail_keterangan', 'like', "%{$search}%")
+                    ->orWhere('trans_payroll_detail_status', 'like', "%{$search}%");
+            });
+        }
+
+        if ($sort_by && $sort_order) {
+            $query->orderBy($sort_by, $sort_order);
+        } else {
+            $query->orderBy('divisi');
+            $query->orderBy('karyawan_nama');
+        }
+
+        $total = $query->count();
+        $orders = $query->offset(($page - 1) * $size)
+            ->limit($size)
+            ->get();
+
+        return response()->json([
+            'data' => $orders,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'size' => $size,
+                'last_page' => ceil($total / $size),
+            ],
+        ]);
+    }
 }

@@ -194,4 +194,40 @@ class TunjanganController extends Controller
             ]
         ]);
     }
+    public function Get_tunjangan_aktif()
+    {
+
+        $query = DB::table('tunjangan')
+            ->select([
+                'tunjangan_id',
+                'perusahaan_id',
+                'depo_id',
+                'kategori_tunjangan_id',
+                'tunjangan_kode',
+                'tunjangan_nama',
+                'tunjangan_keterangan',
+                'tunjangan_jenistunjangan',
+                'tunjangan_dasarbayar',
+                'tunjangan_dibayar_oleh',
+                'tunjangan_dibayar_kepada',
+                'tunjangan_print_slip',
+                'tunjangan_nama_print',
+                'tunjangan_is_aktif',
+                'tunjangan_who_create',
+                'tunjangan_tgl_create',
+                'tunjangan_who_update',
+                'tunjangan_tgl_update',
+                'tunjangan_flag_pph',
+                'tunjangan_khusus',
+                'kolom_baru',
+            ]);
+
+        $query->whereNotNull('tunjangan_id');
+        $query->whereRaw("ISNULL(tunjangan.tunjangan_is_aktif, 0) = 1");
+        $query->orderBy('tunjangan_nama');
+
+        $data = $query->get();
+
+        return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+    }
 }
