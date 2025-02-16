@@ -95,6 +95,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('ProsesSimpanHasilHitungPayrollTemp', [TransPayrollController::class, 'Proses_simpan_hasil_hitung_payroll_temp']);
     Route::post('InsertTransPayrollDetail2Temp', [TransPayrollDetail2Controller::class, 'Insert_trans_payroll_detail2_temp']);
     Route::delete('DeleteTransPayrollDetail2TempByDtl2Id', [TransPayrollController::class, 'Delete_trans_payroll_detail2_temp_by_dtl2_id']);
+    Route::post('GetListPayrollPaginate', [TransPayrollController::class, 'Get_list_payroll_paginate']);
 
     Route::apiResource('TransPayrollDetail', TransPayrollDetailController::class);
     Route::post('GetPaginateTransPayrollDetailById', [TransPayrollDetailController::class, 'Get_paginate_trans_payroll_detail_by_id']);
@@ -106,6 +107,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('GetTransPayrollDetail2ByTransPayrollDetailId', [TransPayrollDetail2Controller::class, 'Get_trans_payroll_detail2_by_trans_payroll_detail_id']);
     Route::post('UpdateTransPayrollDetail2TempByTransPayrollDetailId', [TransPayrollDetail2Controller::class, 'Update_transPayroll_detail2_temp_by_transPayroll_detail_id']);
 
+    Route::get('GetTransPayrollAktif', [TransPayrollController::class, 'Get_trans_payroll_aktif']);
+    Route::get('BankAktif', [TransPayrollController::class, 'Get_bank_aktif']);
     Route::apiResource('Absensi', AbsensiController::class);
 
     Route::post('GetPaginateSkemaTunjangan', [SkemaTunjanganController::class, 'Get_paginate_skema_tunjangan']);
