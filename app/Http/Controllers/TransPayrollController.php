@@ -154,7 +154,7 @@ class TransPayrollController extends Controller
             ]);
 
         $query->whereNotNull('a.trans_payroll_id');
-        $query->whereNotIn('a.trans_payroll_status', ["Validation confirmed"]);
+        // $query->whereNotIn('a.trans_payroll_status', ["Validation confirmed"]);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
