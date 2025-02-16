@@ -154,6 +154,7 @@ class TransPayrollController extends Controller
             ]);
 
         $query->whereNotNull('a.trans_payroll_id');
+        $query->whereNotIn('a.trans_payroll_status', ["Validation confirmed"]);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -1070,7 +1071,7 @@ class TransPayrollController extends Controller
     }
 
 
-    public function Get_trans_payroll_aktif()
+    public function Get_payroll_list()
     {
 
         try {
@@ -1092,6 +1093,22 @@ class TransPayrollController extends Controller
                                 FROM [HRIS_PBS].[dbo].[trans_payroll]
                                 WHERE trans_payroll_status = 'Validation confirmed'
                                 ORDER BY trans_payroll_periode_thn, trans_payroll_periode_bln");
+
+            if (count($data) == 0) {
+                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+            } else {
+                return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Failed to retrieve data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function Get_pre_payroll_list()
+    {
+        try {
+
+            $data = DB::select("SELECT * from trans_payroll where trans_payroll_status not in ('Validation confirmed') order by trans_payroll_periode_thn, trans_payroll_periode_bln DESC");
 
             if (count($data) == 0) {
                 return response()->json(['status' => '204', 'message' => 'No data found'], 204);
