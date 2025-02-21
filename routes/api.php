@@ -86,6 +86,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('GetPaginateAttendance', [AttendanceController::class, 'Get_paginate_attendance']);
     Route::post('attendace-recap', [AttendanceController::class, 'attendanceRecap']);
     Route::post('attendace-list', [AttendanceController::class, 'attendanceList']);
+    Route::get('attendance/template-import/attendance', [AttendanceController::class, 'getTemplateImportAttendance']);
+    Route::post('attendance/import/attendance', [AttendanceController::class, 'importAttendance']);
+    Route::post('attendance/import/refresh-paginate-result', [AttendanceController::class, 'refreshPaginateAttendanceImport']);
+    Route::post('attendance/import/confirm', [AttendanceController::class, 'confirmImportAttendance']);
 
     Route::apiResource('TransPayroll', TransPayrollController::class);
     Route::post('ProsesHitungPayrollAsliKeTemp', [TransPayrollController::class, 'proses_hitung_payroll_asli_ke_temp']);
