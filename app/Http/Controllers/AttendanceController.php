@@ -315,7 +315,7 @@ class AttendanceController extends Controller
         }
 
         $query = DB::table('attendance as a')
-            ->leftJoin('attendance_detail as b', 'a.attendance_id', '=', 'b.attendance_id')
+            ->join('attendance_detail as b', 'a.attendance_id', '=', 'b.attendance_id')
             ->leftJoin('karyawan as c', 'b.karyawan_id', '=', 'c.karyawan_id')
             ->select(array_merge([
                 'c.karyawan_nama',
