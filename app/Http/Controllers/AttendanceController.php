@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-use function PHPUnit\Framework\isEmpty;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
@@ -264,5 +264,99 @@ class AttendanceController extends Controller
                 'last_page' => ceil($total / $perPage)
             ]
         ]);
+    }
+
+    public function attendanceRecap(Request $request){
+        try {
+            $checkPeriodePayroll = Attendance::where('attendance_id', $request->attendance)->first();
+            if(!$checkPeriodePayroll) return response()->json(['status' => '400', 'message' => 'Periode payroll is not found'], 400);
+
+            if($checkPeriodePayroll->attendance_is_aktif != '1') return response()->json(['status' => '400', 'message' => 'Periode payroll is not active'], 400);
+
+            DB::select("EXEC generate_attendance_final '$request->attendance', '$request->who'");
+
+            return response()->json(['status' => '200', 'message' => "Attendance Recap Periode {$checkPeriodePayroll->attendance_kode} successfly"], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => '500', 'message' => 'Attendance recap failed', 'data' => $th->getMessage() ], 500);
+        }
+    }
+
+    public function attendanceList(Request $request)
+    {
+        $attendance = Attendance::where('attendance_id', $request->attendance)->first();
+
+        $startDate = Carbon::parse($attendance->attendance_tgl_awal);
+        $endDate = Carbon::parse($attendance->attendance_tgl_akhir);
+
+        $countPeriode = $startDate->diffInDays($endDate) + 1;
+        $arrayDate = [];
+        $counter = 1;
+
+        while ($startDate->lte($endDate)) {
+            $arrayDate[] = [
+                'display' => $startDate->format('d/m/Y'),
+                'nameAs'  => 'A' . $counter
+            ];
+
+            $startDate->addDay();
+            $counter++;
+        }
+
+        $dynamicColumns = [];
+        for ($i = 1; $i <= $countPeriode; $i++) {
+            $dynamicColumns[] = DB::raw("b.A$i");
+        }
+
+        $query = DB::table('attendance as a')
+            ->leftJoin('attendance_detail as b', 'a.attendance_id', '=', 'b.attendance_id')
+            ->leftJoin('karyawan as c', 'b.karyawan_id', '=', 'c.karyawan_id')
+            ->select(array_merge([
+                'c.karyawan_nama',
+                'c.karyawan_nip',
+                'b.attendance_detail_masuk',
+                'b.attendance_detail_dinas',
+                'b.attendance_detail_cuti',
+                'b.attendance_detail_ijin',
+                'b.attendance_detail_off',
+                'b.attendance_detail_alpha',
+                'b.attendance_detail_libur',
+            ], $dynamicColumns))
+            ->where('a.attendance_id', $attendance->attendance_id);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('c.karyawan_nama', 'like', "%{$search}%")
+                    ->orWhere('c.karyawan_nip', 'like', "%{$search}%");
+            });
+        }
+
+
+        if ($request->filled('sort_by') && $request->filled('sort_order')) {
+            $query->orderBy($request->input('sort_by'), $request->input('sort_order'));
+        } else {
+            $query->orderBy('c.karyawan_nama');
+        }
+
+        $total = $query->count();
+
+        $perPage = $request->input('size', 10);
+        $page = $request->input('page', 1);
+        $orders = $query->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->get();
+
+        return response()->json([
+            'data' => $orders,
+            'columnData' => $arrayDate,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'size' => $perPage,
+                'last_page' => ceil($total / $perPage)
+            ]
+        ]);
+
+        return response()->json($countPeriode);
     }
 }
