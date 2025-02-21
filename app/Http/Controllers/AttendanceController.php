@@ -184,10 +184,10 @@ class AttendanceController extends Controller
                 'depo_id',
                 'attendance_kode',
                 'attendance_thn_awal',
-                DB::raw('DATENAME(MONTH, attendance_bln_awal) AS attendance_bln_awal'),
+                DB::raw('DATENAME(MONTH, attendance_tgl_awal) AS attendance_bln_awal'),
                 'attendance_tgl_awal',
                 'attendance_thn_akhir',
-                DB::raw('DATENAME(MONTH, attendance_bln_akhir) AS attendance_bln_akhir'),
+                DB::raw('DATENAME(MONTH, attendance_tgl_akhir) AS attendance_bln_akhir'),
                 'attendance_tgl_akhir',
                 'attendance_who_create',
                 'attendance_tgl_create',
@@ -266,18 +266,19 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function attendanceRecap(Request $request){
+    public function attendanceRecap(Request $request)
+    {
         try {
             $checkPeriodePayroll = Attendance::where('attendance_id', $request->attendance)->first();
-            if(!$checkPeriodePayroll) return response()->json(['status' => '400', 'message' => 'Periode payroll is not found'], 400);
+            if (!$checkPeriodePayroll) return response()->json(['status' => '400', 'message' => 'Periode payroll is not found'], 400);
 
-            if($checkPeriodePayroll->attendance_is_aktif != '1') return response()->json(['status' => '400', 'message' => 'Periode payroll is not active'], 400);
+            if ($checkPeriodePayroll->attendance_is_aktif != '1') return response()->json(['status' => '400', 'message' => 'Periode payroll is not active'], 400);
 
             DB::select("EXEC generate_attendance_final '$request->attendance', '$request->who'");
 
             return response()->json(['status' => '200', 'message' => "Attendance Recap Periode {$checkPeriodePayroll->attendance_kode} successfly"], 200);
         } catch (\Throwable $th) {
-            return response()->json(['status' => '500', 'message' => 'Attendance recap failed', 'data' => $th->getMessage() ], 500);
+            return response()->json(['status' => '500', 'message' => 'Attendance recap failed', 'data' => $th->getMessage()], 500);
         }
     }
 
@@ -289,6 +290,7 @@ class AttendanceController extends Controller
         $endDate = Carbon::parse($attendance->attendance_tgl_akhir);
 
         $countPeriode = $startDate->diffInDays($endDate) + 1;
+        $countPeriode = $countPeriode > 31 ? 31 : $countPeriode;
         $arrayDate = [];
         $counter = 1;
 

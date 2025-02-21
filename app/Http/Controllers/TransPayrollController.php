@@ -143,7 +143,7 @@ class TransPayrollController extends Controller
                 'a.attendance_id',
                 'b.attendance_kode',
                 'a.trans_payroll_status',
-                DB::raw('DATENAME(MONTH, a.trans_payroll_periode_bln) as trans_payroll_periode_bln_nama'),
+                DB::raw("DATENAME(MONTH, concat(a.trans_payroll_periode_thn,'-',a.trans_payroll_periode_bln,'-01')) as trans_payroll_periode_bln_nama"),
                 'a.trans_payroll_periode_bln',
                 'a.trans_payroll_periode_thn',
                 'a.trans_payroll_who_create',
