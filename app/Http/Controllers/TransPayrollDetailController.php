@@ -115,29 +115,42 @@ class TransPayrollDetailController extends Controller
                             LEFT JOIN karyawan_level LEVEL ON level.karyawan_level_id = karyawan.karyawan_level_id
                             LEFT JOIN
                             (SELECT trans_payroll_detail_id,
-                                    sum(trans_payroll_detail2_totalvalue) AS bruto
-                            FROM
-                                (SELECT trans_payroll_detail_id,
-                                        trans_payroll_detail2_totalvalue,
-                                        isnull(tunjangan.tunjangan_nama, 'BASIC_SALARY') AS tunjangan_nama,
-                                        isnull(tunjangan.tunjangan_flag_pph, 1) AS tunjangan_flag_pph
-                                FROM trans_payroll_detail2
-                                LEFT JOIN tunjangan ON trans_payroll_detail2.tunjangan_id = tunjangan.tunjangan_id
-                                WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
-                                    AND trans_payroll_detail2.tunjangan_nama IN ('BASIC_SALARY')
-                                UNION SELECT a.trans_payroll_detail_id,
-                                            CASE
-                                                WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
-                                                ELSE trans_payroll_detail2_totalvalue
-                                            END AS trans_payroll_detail2_totalvalue ,
-                                            b.tunjangan_nama,
-                                            b.tunjangan_flag_pph
-                                FROM trans_payroll_detail2 a
-                                LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
-                                WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
-                                    AND isnull(b.tunjangan_flag_pph, 0) = 1
-                                    AND isnull(b.tunjangan_khusus, 0) = 0) tempbruto
-                            GROUP BY trans_payroll_detail_id) tempbruto ON dtl.trans_payroll_detail_id = tempbruto.trans_payroll_detail_id
+                                                                sum(trans_payroll_detail2_totalvalue) AS bruto
+                                                        FROM
+                                                            (SELECT trans_payroll_detail_id,
+                                                                trans_payroll_detail2_totalvalue
+                                                            FROM trans_payroll_detail2
+                                                            WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                                                AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
+                                                            UNION SELECT a.trans_payroll_detail_id,
+                                                                    sum(trans_payroll_detail2_totalvalue) AS trans_payroll_detail2_totalvalue
+                                                                FROM trans_payroll_detail2 a
+                                                                LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                                                WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                                                AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                                                GROUP BY a.trans_payroll_detail_id
+                                                            UNION SELECT trans_payroll_detail_id,
+                                                                -1 * trans_payroll_detail2_totalvalue
+                                                            FROM trans_payroll_detail2
+                                                            WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                                            AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                                            UNION SELECT a.trans_payroll_detail_id,
+                                                                        a.trans_payroll_detail2_totalvalue
+                                                            FROM trans_payroll_detail2 a
+                                                            LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                                            WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                                            AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                                            AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
+                                                            UNION SELECT a.trans_payroll_detail_id,
+                                                            CASE
+                                                                WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
+                                                                ELSE trans_payroll_detail2_totalvalue
+                                                            END AS trans_payroll_detail2_totalvalue
+                                                            FROM trans_payroll_detail2 a
+                                                            LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                                            WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                                                AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')) tempbruto
+                                                        GROUP BY trans_payroll_detail_id) tempbruto ON dtl.trans_payroll_detail_id = tempbruto.trans_payroll_detail_id
                             LEFT JOIN
                             (SELECT trans_payroll_detail_id,
                                     trans_payroll_detail2_totalvalue AS pph21
@@ -178,29 +191,42 @@ class TransPayrollDetailController extends Controller
                                 LEFT JOIN karyawan_level LEVEL ON level.karyawan_level_id = karyawan.karyawan_level_id
                                 LEFT JOIN
                                 (SELECT trans_payroll_detail_id,
-                                        sum(trans_payroll_detail2_totalvalue) AS bruto
-                                FROM
-                                    (SELECT trans_payroll_detail_id,
-                                            trans_payroll_detail2_totalvalue,
-                                            isnull(tunjangan.tunjangan_nama, 'BASIC_SALARY') AS tunjangan_nama,
-                                            isnull(tunjangan.tunjangan_flag_pph, 1) AS tunjangan_flag_pph
-                                    FROM trans_payroll_detail2_temp
-                                    LEFT JOIN tunjangan ON trans_payroll_detail2_temp.tunjangan_id = tunjangan.tunjangan_id
-                                    WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
-                                        AND trans_payroll_detail2_temp.tunjangan_nama IN ('BASIC_SALARY')
-                                    UNION SELECT a.trans_payroll_detail_id,
-                                                CASE
-                                                    WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
-                                                    ELSE trans_payroll_detail2_totalvalue
-                                                END AS trans_payroll_detail2_totalvalue ,
-                                                b.tunjangan_nama,
-                                                b.tunjangan_flag_pph
-                                    FROM trans_payroll_detail2_temp a
-                                    LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
-                                    WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
-                                        AND isnull(b.tunjangan_flag_pph, 0) = 1
-                                        AND isnull(b.tunjangan_khusus, 0) = 0) tempbruto
-                                GROUP BY trans_payroll_detail_id) tempbruto ON dtl.trans_payroll_detail_id = tempbruto.trans_payroll_detail_id
+                                            sum(trans_payroll_detail2_totalvalue) AS bruto
+                                    FROM
+                                        (SELECT trans_payroll_detail_id,
+                                                trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2_temp
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                            AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
+                                        UNION SELECT a.trans_payroll_detail_id,
+                                                    sum(trans_payroll_detail2_totalvalue) AS trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2_temp a
+                                        LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+										AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+										GROUP BY a.trans_payroll_detail_id
+                                        UNION SELECT trans_payroll_detail_id,
+                                                -1 * trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2_temp
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                        AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                        UNION SELECT a.trans_payroll_detail_id,
+                                                     a.trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2_temp a
+                                        LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                        AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                        AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
+                                        UNION SELECT a.trans_payroll_detail_id,
+                                                    CASE
+                                                        WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
+                                                        ELSE trans_payroll_detail2_totalvalue
+                                                    END AS trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2_temp a
+                                        LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$id'
+                                            AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')) tempbruto
+                                    GROUP BY trans_payroll_detail_id) tempbruto ON dtl.trans_payroll_detail_id = tempbruto.trans_payroll_detail_id
                                 LEFT JOIN
                                 (SELECT trans_payroll_detail_id,
                                         trans_payroll_detail2_totalvalue AS pph21

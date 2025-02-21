@@ -464,12 +464,19 @@ class TransPayrollController extends Controller
                                                 trans_payroll_detail2_totalvalue
                                         FROM trans_payroll_detail2_temp
                                         WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
-                                            AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_HARI_LIBUR_PER_JAM','BJKK_P','BJKM_P','BKES_P')
+                                            AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
                                         UNION SELECT trans_payroll_detail_id,
                                                 -1 * trans_payroll_detail2_totalvalue
                                         FROM trans_payroll_detail2_temp
                                         WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
                                         AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                        UNION SELECT a.trans_payroll_detail_id,
+                                                     a.trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2_temp a
+                                        LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
+                                        AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                        AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
                                         UNION SELECT a.trans_payroll_detail_id,
                                                     CASE
                                                         WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
@@ -537,7 +544,7 @@ class TransPayrollController extends Controller
                                                 trans_payroll_detail2_totalvalue
                                         FROM trans_payroll_detail2_temp
                                         WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
-                                            AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_HARI_LIBUR_PER_JAM','BJKK_P','BJKM_P','BKES_P')
+                                            AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
                                         UNION SELECT a.trans_payroll_detail_id,
                                                     sum(trans_payroll_detail2_totalvalue) AS trans_payroll_detail2_totalvalue
                                         FROM trans_payroll_detail2_temp a
@@ -550,6 +557,13 @@ class TransPayrollController extends Controller
                                         FROM trans_payroll_detail2_temp
                                         WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
                                         AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                        UNION SELECT a.trans_payroll_detail_id,
+                                                     a.trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2_temp a
+                                        LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
+                                        AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                        AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
                                         UNION SELECT a.trans_payroll_detail_id,
                                                     CASE
                                                         WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
@@ -651,7 +665,7 @@ class TransPayrollController extends Controller
                                             trans_payroll_detail2_totalvalue
                                     FROM trans_payroll_detail2
                                     WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
-                                        AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_HARI_LIBUR_PER_JAM','BJKK_P','BJKM_P','BKES_P')
+                                        AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
                                     UNION SELECT a.trans_payroll_detail_id,
                                                     sum(trans_payroll_detail2_totalvalue) AS trans_payroll_detail2_totalvalue
                                         FROM trans_payroll_detail2 a
@@ -664,6 +678,13 @@ class TransPayrollController extends Controller
                                     FROM trans_payroll_detail2
                                     WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
                                     AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                    UNION SELECT a.trans_payroll_detail_id,
+                                                     a.trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2 a
+                                        LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
+                                        AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                        AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
                                     UNION SELECT a.trans_payroll_detail_id,
                                                 CASE
                                                     WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
@@ -732,7 +753,7 @@ class TransPayrollController extends Controller
                                             trans_payroll_detail2_totalvalue
                                     FROM trans_payroll_detail2
                                     WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
-                                        AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_HARI_LIBUR_PER_JAM','BJKK_P','BJKM_P','BKES_P')
+                                        AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
                                     UNION SELECT a.trans_payroll_detail_id,
                                                     sum(trans_payroll_detail2_totalvalue) AS trans_payroll_detail2_totalvalue
                                         FROM trans_payroll_detail2 a
@@ -745,6 +766,13 @@ class TransPayrollController extends Controller
                                     FROM trans_payroll_detail2
                                     WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
                                     AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                    UNION SELECT a.trans_payroll_detail_id,
+                                                     a.trans_payroll_detail2_totalvalue
+                                        FROM trans_payroll_detail2 a
+                                        LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                        WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
+                                        AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                        AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
                                     UNION SELECT a.trans_payroll_detail_id,
                                                 CASE
                                                     WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
@@ -911,7 +939,7 @@ class TransPayrollController extends Controller
                                                                     trans_payroll_detail2_totalvalue
                                                                 FROM trans_payroll_detail2
                                                                 WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
-                                                                    AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_HARI_LIBUR_PER_JAM','BJKK_P','BJKM_P','BKES_P')
+                                                                    AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
                                                                 UNION SELECT a.trans_payroll_detail_id,
                                                                         sum(trans_payroll_detail2_totalvalue) AS trans_payroll_detail2_totalvalue
                                                                     FROM trans_payroll_detail2 a
@@ -924,6 +952,13 @@ class TransPayrollController extends Controller
                                                                 FROM trans_payroll_detail2
                                                                 WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
                                                                 AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                                                UNION SELECT a.trans_payroll_detail_id,
+                                                                            a.trans_payroll_detail2_totalvalue
+                                                                FROM trans_payroll_detail2 a
+                                                                LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                                                WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
+                                                                AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                                                AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
                                                                 UNION SELECT a.trans_payroll_detail_id,
                                                                 CASE
                                                                     WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue
@@ -1007,7 +1042,7 @@ class TransPayrollController extends Controller
                                                                 trans_payroll_detail2_totalvalue
                                                             FROM trans_payroll_detail2
                                                             WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
-                                                                AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_HARI_LIBUR_PER_JAM','BJKK_P','BJKM_P','BKES_P')
+                                                                AND tunjangan_nama IN ('BASIC_SALARY','UANG_SHIFT_MALAM','UANG_LEMBUR_PER_JAM','UANG_LEMBUR_HARI_LIBUR_PER_JAM')
                                                             UNION SELECT a.trans_payroll_detail_id,
                                                                     sum(trans_payroll_detail2_totalvalue) AS trans_payroll_detail2_totalvalue
                                                                 FROM trans_payroll_detail2 a
@@ -1020,6 +1055,13 @@ class TransPayrollController extends Controller
                                                             FROM trans_payroll_detail2
                                                             WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
                                                             AND tunjangan_nama IN ('POTONGAN_TERLAMBAT')
+                                                            UNION SELECT a.trans_payroll_detail_id,
+                                                                        a.trans_payroll_detail2_totalvalue
+                                                            FROM trans_payroll_detail2 a
+                                                            LEFT JOIN tunjangan b ON a.tunjangan_id = b.tunjangan_id
+                                                            WHERE CONVERT(nvarchar(36), trans_payroll_id) = '$trans_payroll_id'
+                                                            AND b.tunjangan_jenistunjangan = 'MENAMBAH PENDAPATAN'
+                                                            AND b.tunjangan_dasarbayar IN ('TETAP','TIDAK TETAP','KEHADIRAN')
                                                             UNION SELECT a.trans_payroll_detail_id,
                                                             CASE
                                                                 WHEN b.tunjangan_jenistunjangan = 'MENGURANGI PENDAPATAN' THEN -trans_payroll_detail2_totalvalue

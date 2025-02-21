@@ -17,7 +17,7 @@ class Attendance extends Model
 
     protected $fillable = [
         'attendance_id',
-        'preusahaan_id',
+        'perusahaan_id',
         'depo_id',
         'attendance_kode',
         'attendance_thn_awal',
@@ -37,7 +37,7 @@ class Attendance extends Model
     ];
 
     protected $nullable = [
-        'preusahaan_id',
+        'perusahaan_id',
         'depo_id',
         'attendance_kode',
         'attendance_thn_awal',

@@ -72,7 +72,7 @@ class AttendanceController extends Controller
             $validated = $request->validate([
                 'perusahaan_id' => '',
                 'depo_id' => '',
-                'attendance_kode' => 'required|unique:attendance,attendance_kode|string|max:255',
+                'attendance_kode' => 'required|string|max:255',
                 'attendance_thn_awal' => 'required|numeric',
                 'attendance_bln_awal' => 'required|numeric',
                 'attendance_tgl_awal' => 'required|date',
