@@ -126,7 +126,7 @@ class TransPayrollDetail2Controller extends Controller
 									order by dtl1.karyawan_id,ISNULL(dtl.trans_payroll_detail2_urut,0) asc");
 
             if (count($data) == 0) {
-                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+                return response()->json(['status' => '204', 'message' => 'No data found', 'data' => []], 204);
             } else {
                 return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
             }
@@ -163,7 +163,7 @@ class TransPayrollDetail2Controller extends Controller
 									order by dtl1.karyawan_id,ISNULL(dtl.trans_payroll_detail2_urut,0) asc");
 
             if (count($data) == 0) {
-                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+                return response()->json(['status' => '204', 'message' => 'No data found', 'data' => []], 204);
             } else {
                 return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
             }
@@ -308,7 +308,7 @@ class TransPayrollDetail2Controller extends Controller
 									order by dtl1.karyawan_id,ISNULL(dtl.trans_payroll_detail2_urut,0) asc");
 
             if (count($data) == 0) {
-                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+                return response()->json(['status' => '204', 'message' => 'No data found', 'data' => []], 204);
             } else {
                 $total = count($data);
                 $perPage = count($data);
@@ -361,7 +361,7 @@ class TransPayrollDetail2Controller extends Controller
 									order by dtl1.karyawan_id,ISNULL(dtl.trans_payroll_detail2_urut,0) asc");
 
             if (count($data) == 0) {
-                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+                return response()->json(['status' => '204', 'message' => 'No data found', 'data' => []], 204);
             } else {
                 return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
             }
@@ -400,7 +400,7 @@ class TransPayrollDetail2Controller extends Controller
 									order by dtl1.karyawan_id,ISNULL(dtl.trans_payroll_detail2_urut,0) asc");
 
             if (count($data) == 0) {
-                return response()->json(['status' => '204', 'message' => 'No data found'], 204);
+                return response()->json(['status' => '204', 'message' => 'No data found', 'data' => []], 204);
             } else {
                 return response()->json(['status' => '200', 'message' => 'Data retrieved successfully', 'data' => $data], 200);
             }

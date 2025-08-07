@@ -31,6 +31,7 @@ class TransPayrollController extends Controller
                 'trans_payroll_status' => 'required|string|max:255',
                 'trans_payroll_periode_bln' => 'required|numeric',
                 'trans_payroll_periode_thn' => 'required|numeric',
+                'karyawan_divisi_id' => 'required|string|max:255',
                 'trans_payroll_who_create' => '',
                 'trans_payroll_tgl_create' => '',
                 'trans_payroll_who_update' => '',
@@ -78,6 +79,7 @@ class TransPayrollController extends Controller
                 'trans_payroll_status' => 'required|string|max:255',
                 'trans_payroll_periode_bln' => 'required|numeric',
                 'trans_payroll_periode_thn' => 'required|numeric',
+                'karyawan_divisi_id' => 'required|string|max:255',
                 'trans_payroll_who_create' => '',
                 'trans_payroll_tgl_create' => '',
                 'trans_payroll_who_update' => '',
@@ -390,9 +392,10 @@ class TransPayrollController extends Controller
         $attendance_id = $request->input('attendance_id');
         $trans_payroll_id = $request->input('trans_payroll_id');
         $pengguna_username = $request->input('pengguna_username');
+        $karyawan_divisi_id = $request->input('karyawan_divisi_id');
 
         try {
-            DB::statement("exec proses_simpan_hasil_hitung_payroll_temp '$attendance_id','$trans_payroll_id','$pengguna_username'");
+            DB::statement("exec proses_simpan_hasil_hitung_payroll_temp '$attendance_id','$trans_payroll_id','$karyawan_divisi_id','$pengguna_username'");
 
             return response()->json(['status' => '200', 'message' => 'proses_simpan_hasil_hitung_payroll_temp successfully'], 200);
         } catch (Exception $e) {

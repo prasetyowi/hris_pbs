@@ -434,7 +434,7 @@ class AttendanceController extends Controller
                 }
 
                 // cek kolom c ada ada isinya atau gak
-                if (!empty($rowData['C'] )) {
+                if (!empty($rowData['C'])) {
                     //cek format kolom c harus Y-m-d H:i:s
                     if (!($date = \DateTime::createFromFormat('Y-m-d H:i:s', $rowData['C'])) || $date->format('Y-m-d H:i:s') !== $rowData['C']) {
                         $errorMessage .= 'Format Tanggal Check In must be Y-m-d H:i:s, ';
@@ -447,7 +447,7 @@ class AttendanceController extends Controller
                 }
 
                 // cek kolom c ada ada isinya atau gak
-                if (!empty($rowData['D'] )) {
+                if (!empty($rowData['D'])) {
                     //cek format kolom c harus Y-m-d H:i:s
                     if (!($date = \DateTime::createFromFormat('Y-m-d H:i:s', $rowData['D'])) || $date->format('Y-m-d H:i:s') !== $rowData['D']) {
                         $errorMessage .= 'Format Tanggal Check Out must be Y-m-d H:i:s';
@@ -459,7 +459,7 @@ class AttendanceController extends Controller
                     }
                 }
 
-                if($rowData){
+                if ($rowData) {
                     AttendanceImportResult::insert([
                         'id' => DB::select("select NEWID() as id")[0]->id,
                         'attendance_code' => $rowData['A'],
@@ -475,12 +475,11 @@ class AttendanceController extends Controller
 
             $getListImportResult = AttendanceImportResult::where('who', $request->who)->get();
 
-            if (count($getListImportResult) == 0) return response()->json(['status' => '500', 'message' => 'Attendance import failed, data is empty' ], 500);
+            if (count($getListImportResult) == 0) return response()->json(['status' => '500', 'message' => 'Attendance import failed, data is empty'], 500);
 
             return response()->json(['status' => '200', 'message' => 'Attendance import successfly'], 200);
-
         } catch (\Throwable $th) {
-            return response()->json(['status' => '500', 'message' => 'Attendance import failed', 'data' => $th->getMessage() ], 500);
+            return response()->json(['status' => '500', 'message' => 'Attendance import failed', 'data' => $th->getMessage()], 500);
         }
     }
 
@@ -489,9 +488,9 @@ class AttendanceController extends Controller
         DB::beginTransaction();
         try {
             $dataImport = AttendanceImportResult::where('who', $request->who)->where('status', 1)->get();
-            if($dataImport){
+            if ($dataImport) {
                 foreach ($dataImport as $item) {
-                    DB::statement("EXEC import_absensi_dari_excel ?, ?, ?, ?, ?", [$item->attendance_code,$item->employee_nip,$item->check_in,$item->check_out,$request->who]);
+                    DB::statement("EXEC import_absensi_dari_excel ?, ?, ?, ?, ?", [$item->attendance_code, $item->employee_nip, $item->check_in, $item->check_out, $request->who]);
                 }
             }
 
@@ -501,7 +500,7 @@ class AttendanceController extends Controller
             return response()->json(['status' => '200', 'message' => 'Attendance import successfly'], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(['status' => '500', 'message' => 'Attendance import failed', 'data' => $th->getMessage() ], 500);
+            return response()->json(['status' => '500', 'message' => 'Attendance import failed', 'data' => $th->getMessage()], 500);
         }
     }
 

@@ -168,7 +168,7 @@ class TunjanganController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('tunjangan_nama', 'like', "%{$search}%")
                     ->orWhere('tunjangan_kode', 'like', "%{$search}%")
-                    ->orWhere('tunjangan_keterangan', 'like', "%{$search}%");
+                    ->orWhere('tunjangan_jenistunjangan', 'like', "%{$search}%");
             });
         }
 
