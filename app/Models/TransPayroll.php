@@ -28,6 +28,7 @@ class TransPayroll extends Model
         'trans_payroll_who_update',
         'trans_payroll_tgl_update',
         'jenis_pajak',
+        'karyawan_divisi_id'
     ];
 
     protected $nullable = [
