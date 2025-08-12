@@ -77,7 +77,16 @@ class KaryawanController extends Controller
             ], [
                 'karyawan_is_dewa.default' => '0',
                 'karyawan_is_deleted.default' => '0',
+                'perusahaan_id.default' => '2C3AFF51-4388-4D30-8C91-2580750960FC',
+                'depo_id.default' => '7B186AAD-1DC8-478B-AEEE-0D2C263510EA',
+                'karyawan_jenispajak.default' => 'TER_HARIAN'
             ]);
+
+            $validated['karyawan_is_dewa'] = $validated['karyawan_is_dewa'] ?? 0;
+            $validated['karyawan_is_deleted'] = $validated['karyawan_is_deleted'] ?? 0;
+            $validated['perusahaan_id'] = $validated['perusahaan_id'] ?? '2C3AFF51-4388-4D30-8C91-2580750960FC';
+            $validated['depo_id'] = $validated['depo_id'] ?? '7B186AAD-1DC8-478B-AEEE-0D2C263510EA';
+            $validated['karyawan_jenispajak'] = $validated['karyawan_jenispajak'] ?? 'TER_HARIAN';
 
             $data = Karyawan::create($validated);
 
@@ -155,6 +164,9 @@ class KaryawanController extends Controller
                 'karyawan_is_dewa.default' => '0',
                 'karyawan_is_deleted.default' => '0',
             ]);
+
+            $validated['perusahaan_id'] = $validated['perusahaan_id'] ?? '2C3AFF51-4388-4D30-8C91-2580750960FC';
+            $validated['depo_id'] = $validated['depo_id'] ?? '7B186AAD-1DC8-478B-AEEE-0D2C263510EA';
 
             $karyawan->update($validated);
 

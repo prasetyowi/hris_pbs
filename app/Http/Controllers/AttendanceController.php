@@ -44,6 +44,7 @@ class AttendanceController extends Controller
                 'attendance_is_generate_pph21' => '',
                 'attendance_periode_bln' => 'required|numeric',
                 'attendance_periode_thn' => 'required|numeric',
+                'karyawan_divisi_id' => 'required|string|max:255',
                 // Tambahkan validasi lain sesuai kebutuhan
             ]);
 
@@ -92,6 +93,7 @@ class AttendanceController extends Controller
                 'attendance_is_generate_pph21' => '',
                 'attendance_periode_bln' => 'required|numeric',
                 'attendance_periode_thn' => 'required|numeric',
+                'karyawan_divisi_id' => 'required|string|max:255',
                 // Tambahkan validasi lain sesuai kebutuhan
             ]);
 
@@ -162,6 +164,7 @@ class AttendanceController extends Controller
     public function Get_paginate_attendance(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'karyawan_divisi_id' => 'nullable|string',
             'attendance_periode_thn' => 'nullable|string',
             'attendance_periode_bln' => 'nullable|string',
             'attendance_is_aktif' => 'nullable|string|max:255',
@@ -181,75 +184,71 @@ class AttendanceController extends Controller
             ], 400);
         }
 
-        $query = DB::table('attendance')
+        $query = DB::table('attendance AS a')
+            ->leftJoin('karyawan_divisi AS kd', 'kd.karyawan_divisi_id', '=', 'a.karyawan_divisi_id')
             ->select([
-                DB::raw('ROW_NUMBER() OVER (ORDER BY attendance_periode_thn, attendance_periode_bln) AS RowNum'),
-                'attendance_id',
-                'perusahaan_id',
-                'depo_id',
-                'attendance_kode',
-                'attendance_thn_awal',
-                DB::raw('DATENAME(MONTH, attendance_tgl_awal) AS attendance_bln_awal'),
-                'attendance_tgl_awal',
-                'attendance_thn_akhir',
-                DB::raw('DATENAME(MONTH, attendance_tgl_akhir) AS attendance_bln_akhir'),
-                'attendance_tgl_akhir',
-                'attendance_who_create',
-                'attendance_tgl_create',
-                'attendance_who_update',
-                'attendance_tgl_update',
-                'attendance_is_aktif',
-                'attendance_is_generate_pph21',
-                DB::raw('DATENAME(MONTH, attendance_periode_bln) AS attendance_periode_bln_nama'),
-                'attendance_periode_bln',
-                'attendance_periode_thn'
+                DB::raw('ROW_NUMBER() OVER (ORDER BY a.attendance_periode_thn, a.attendance_periode_bln) AS RowNum'),
+                'a.attendance_id',
+                'a.perusahaan_id',
+                'a.depo_id',
+                'a.attendance_kode',
+                'a.attendance_thn_awal',
+                DB::raw('DATENAME(MONTH, a.attendance_tgl_awal) AS attendance_bln_awal'),
+                'a.attendance_tgl_awal',
+                'a.attendance_thn_akhir',
+                DB::raw('DATENAME(MONTH, a.attendance_tgl_akhir) AS attendance_bln_akhir'),
+                'a.attendance_tgl_akhir',
+                'a.attendance_who_create',
+                'a.attendance_tgl_create',
+                'a.attendance_who_update',
+                'a.attendance_tgl_update',
+                'a.attendance_is_aktif',
+                'a.attendance_is_generate_pph21',
+                DB::raw('DATENAME(MONTH, a.attendance_periode_bln) AS attendance_periode_bln_nama'),
+                'a.attendance_periode_bln',
+                'a.attendance_periode_thn',
+                DB::raw("ISNULL(kd.karyawan_divisi_nama, '') AS karyawan_divisi_nama")
             ]);
 
-        $query->whereNotNull('attendance_id');
+        $query->whereNotNull('a.attendance_id');
 
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('attendance_kode', 'like', "%{$search}%")
-                    ->orWhere('attendance_thn_awal', 'like', "%{$search}%")
-                    ->orWhereRaw("DATENAME(MONTH, attendance_bln_awal) like ?", ["%{$search}%"])
-                    ->orWhereRaw("DATENAME(MONTH, attendance_bln_akhir) like ?", ["%{$search}%"])
-                    ->orWhereRaw("DATENAME(MONTH, attendance_periode_bln) like ?", ["%{$search}%"])
-                    ->orWhere('attendance_tgl_awal', 'like', "%{$search}%")
-                    ->orWhere('attendance_tgl_akhir', 'like', "%{$search}%")
-                    ->orWhere('attendance_thn_awal', 'like', "%{$search}%")
-                    ->orWhere('attendance_thn_akhir', 'like', "%{$search}%")
-                    ->orWhere('attendance_periode_thn', 'like', "%{$search}%");
+                $q->where('a.attendance_kode', 'like', "%{$search}%")
+                    ->orWhere('a.attendance_thn_awal', 'like', "%{$search}%")
+                    ->orWhereRaw("DATENAME(MONTH, a.attendance_tgl_awal) like ?", ["%{$search}%"])
+                    ->orWhereRaw("DATENAME(MONTH, a.attendance_tgl_akhir) like ?", ["%{$search}%"])
+                    ->orWhereRaw("DATENAME(MONTH, a.attendance_periode_bln) like ?", ["%{$search}%"])
+                    ->orWhere('a.attendance_tgl_awal', 'like', "%{$search}%")
+                    ->orWhere('a.attendance_tgl_akhir', 'like', "%{$search}%")
+                    ->orWhere('a.attendance_thn_awal', 'like', "%{$search}%")
+                    ->orWhere('a.attendance_thn_akhir', 'like', "%{$search}%")
+                    ->orWhere('a.attendance_periode_thn', 'like', "%{$search}%")
+                    ->orWhere('kd.karyawan_divisi_nama', 'like', "%{$search}%");
             });
         }
 
         if ($request->filled('attendance_is_aktif')) {
             $attendance_is_aktif = $request->input('attendance_is_aktif');
-            $query->where(function ($q) use ($attendance_is_aktif) {
-                $q->whereRaw("ISNULL(attendance.attendance_is_aktif, 0) = ?", [$attendance_is_aktif]);
-            });
+            $query->whereRaw("ISNULL(a.attendance_is_aktif, 0) = ?", [$attendance_is_aktif]);
         }
 
         if ($request->filled('attendance_periode_thn')) {
             $attendance_periode_thn = $request->input('attendance_periode_thn');
-            $query->where(function ($q) use ($attendance_periode_thn) {
-                $q->where('attendance_periode_thn', '=', "$attendance_periode_thn");
-            });
+            $query->where('a.attendance_periode_thn', '=', $attendance_periode_thn);
         }
 
         if ($request->filled('attendance_periode_bln')) {
             $attendance_periode_bln = $request->input('attendance_periode_bln');
-            $query->where(function ($q) use ($attendance_periode_bln) {
-                $q->where('attendance_periode_bln', '=', "$attendance_periode_bln");
-            });
+            $query->where('a.attendance_periode_bln', '=', $attendance_periode_bln);
         }
-
 
         if ($request->filled('sort_by') && $request->filled('sort_order')) {
             $query->orderBy($request->input('sort_by'), $request->input('sort_order'));
         } else {
-            $query->orderBy('attendance_periode_thn')
-                ->orderBy('attendance_periode_bln');
+            $query->orderBy('a.attendance_periode_thn')
+                ->orderBy('a.attendance_periode_bln');
         }
 
         $total = $query->count();
@@ -270,6 +269,7 @@ class AttendanceController extends Controller
             ]
         ]);
     }
+
 
     public function attendanceRecap(Request $request)
     {

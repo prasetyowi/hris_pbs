@@ -34,6 +34,7 @@ class Attendance extends Model
         'attendance_is_generate_pph21',
         'attendance_periode_bln',
         'attendance_periode_thn',
+        'karyawan_divisi_id',
     ];
 
     protected $nullable = [
@@ -54,5 +55,6 @@ class Attendance extends Model
         'attendance_is_generate_pph21',
         'attendance_periode_bln',
         'attendance_periode_thn',
+        'karyawan_divisi_id',
     ];
 }
